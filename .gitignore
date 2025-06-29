@@ -18,6 +18,18 @@ Thumbs.db
 *.swo
 *~
 
+# Claude settings (contains personal preferences)
+.claude/settings.local.json
+
+# Sapling SCM metadata (if using Sapling instead of Git)
+.sl/
+
+# Git metadata conflicts in Sapling workflow
+.git/index
+.git/FETCH_HEAD
+.git/refs/
+.git/logs/
+
 # Taskmaster runtime
 .taskmaster/state.json
 .taskmaster/reports/*.json
@@ -53,4 +65,9 @@ out/
 # Private notes
 private/
 notes/
-TODO.md 
+TODO.md
+
+# User-specific project files (when using this as a template)
+my-prd.txt
+my-project/
+.cursor/settings.json 
