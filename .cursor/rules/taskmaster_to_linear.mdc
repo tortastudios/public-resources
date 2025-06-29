@@ -1,0 +1,580 @@
+---
+description: Request this rule when you need to convert Taskmaster tasks into Linear issues, maintaining proper relationships, preventing duplicates, and ensuring consistent formatting and structure.
+globs: 
+alwaysApply: false
+---
+---
+description: Guidelines for creating Linear issues from Taskmaster tasks with proper structure and relationships
+globs: .taskmaster/tasks/*.txt
+alwaysApply: false
+ruleType: agent-requested
+taskDescription: Request this rule when you need to convert Taskmaster tasks into Linear issues, maintaining proper relationships, preventing duplicates, and ensuring consistent formatting and structure.
+---
+# Universal Taskmaster → Linear Integration Protocol
+
+This rule defines the standardized process for converting Taskmaster tasks into Linear issues across any development project, ensuring proper relationships, preventing duplicates, and maintaining consistent structure within tag-aware workflows.
+
+## Core Integration Principles
+
+- **Tag-Aware Conversion**: Respect tag contexts and project boundaries when creating Linear issues
+- **Project Discovery**: Dynamically identify project names and structure for proper issue organization
+- **Duplicate Prevention**: Check existing Linear issues before creation to avoid conflicts
+- **Relationship Preservation**: Maintain parent-child subtask relationships in Linear
+- **Consistent Structure**: Standardized issue creation with complete information across all projects
+- **Status Synchronization**: Bidirectional sync between Taskmaster and Linear status updates
+- **Cross-Project Coordination**: Handle dependencies across different projects and tags
+
+## Mandatory Prerequisites
+
+### 1. Tag Context and Project Discovery
+```yaml
+before_linear_operations:
+  # STEP 1: Ensure proper tag context (from @taskmaster-base.mcp)
+  1. verify_tag_context:
+     - confirm_current_tag_is_appropriate()
+     - discover_project_name_from_tag_and_structure()
+     - validate_project_exists_in_monorepo()
+  
+  # STEP 2: Load Linear workspace context
+  2. linear_workspace_discovery:
+     - identify_linear_workspace_for_project()
+     - detect_team_assignments()
+     - map_project_to_linear_labels()
+  
+  # STEP 3: Validate permissions and access
+  3. permission_validation:
+     - verify_linear_api_access()
+     - confirm_project_team_membership()
+     - validate_issue_creation_permissions()
+```
+
+### 2. Pre-Conversion Analysis
+```yaml
+conversion_analysis:
+  task_assessment:
+    # Analyze task structure and requirements
+    - determine_if_conversion_needed(task_complexity, scope)
+    - identify_parent_child_relationships()
+    - extract_cross_project_dependencies()
+    - assess_linear_issue_type_requirements()
+  
+  duplicate_prevention:
+    # Comprehensive duplicate checking
+    - search_existing_linear_issues_by_title()
+    - check_taskmaster_id_references_in_linear()
+    - identify_potential_duplicate_patterns()
+    - validate_unique_conversion_opportunity()
+  
+  project_context_mapping:
+    # Map discovered project to Linear organization
+    - map_discovered_project_to_linear_team()
+    - determine_appropriate_linear_labels()
+    - identify_milestone_or_project_associations()
+    - assess_priority_level_mapping()
+```
+
+## Universal Conversion Strategies
+
+### Strategy 1: Single Task Conversion (Complexity 1-3)
+```yaml
+simple_task_conversion:
+  when: task.complexity <= 3 AND no_subtasks AND single_project_scope
+  
+  linear_issue_creation:
+    title: "{Discovered Project}: {Task Title}"
+    description: |
+      **Project**: {dynamically_discovered_project_name}
+      **Tag Context**: {current_tag}
+      **Taskmaster ID**: {task_id}
+      **Complexity**: {score}/10
+      
+      ## Description
+      {task.description}
+      
+      ## Implementation Details
+      {task.details}
+      
+      ## Test Strategy
+      {task.testStrategy}
+      
+      ## Success Criteria
+      - [ ] Implementation complete in {discovered_project_path}
+      - [ ] Tests pass using appropriate testing framework
+      - [ ] Task marked as 'done' in Taskmaster
+    
+    labels: ["{discovered_project}", "taskmaster-sync", "complexity-{score}"]
+    team: "{mapped_team_from_project_discovery}"
+    priority: "{mapped_priority_from_taskmaster}"
+    
+  post_creation:
+    - update_taskmaster_with_linear_issue_id()
+    - add_linear_url_to_task_details()
+    - set_bidirectional_sync_metadata()
+```
+
+### Strategy 2: Parent-Child Task Conversion (Complexity 4-7)
+```yaml
+hierarchical_task_conversion:
+  when: task.has_subtasks OR task.complexity >= 4
+  
+  parent_issue_creation:
+    title: "{Discovered Project}: {Parent Task Title}"
+    description: |
+      **Project**: {dynamically_discovered_project_name}  
+      **Tag Context**: {current_tag}
+      **Taskmaster Parent ID**: {parent_task_id}
+      **Complexity**: {score}/10
+      **Subtask Count**: {subtask_count}
+      
+      ## Epic Description
+      {parent_task.description}
+      
+      ## Implementation Scope
+      {parent_task.details}
+      
+      ## Subtasks Overview
+      {list_of_subtask_titles_and_ids}
+      
+      ## Success Criteria
+      - [ ] All subtasks completed
+      - [ ] Integration testing complete
+      - [ ] Epic marked as 'done' in Taskmaster
+    
+    type: "Epic" # or "Feature" based on Linear workspace configuration
+    labels: ["{discovered_project}", "taskmaster-epic", "complexity-{score}"]
+  
+  subtask_issue_creation:
+    for_each_subtask:
+      title: "{Discovered Project}: {Subtask Title}"
+      description: |
+        **Parent Epic**: [Link to parent Linear issue]
+        **Project**: {dynamically_discovered_project_name}
+        **Tag Context**: {current_tag}  
+        **Taskmaster Subtask ID**: {parent_id}.{subtask_id}
+        
+        ## Subtask Details
+        {subtask.description}
+        
+        ## Implementation Notes
+        {subtask.details}
+        
+        ## Dependencies
+        {list_dependencies_with_linear_links}
+        
+        ## Success Criteria
+        - [ ] Implementation complete
+        - [ ] Unit tests pass
+        - [ ] Subtask marked as 'done' in Taskmaster
+      
+      parent: "{parent_linear_issue_id}"
+      labels: ["{discovered_project}", "taskmaster-subtask", "complexity-{subtask_score}"]
+  
+  post_creation:
+    - link_all_subtasks_to_parent_epic()
+    - update_taskmaster_with_all_linear_issue_ids()
+    - establish_bidirectional_sync_for_hierarchy()
+```
+
+### Strategy 3: Cross-Project Epic Conversion (Complexity 8-10)
+```yaml
+cross_project_epic_conversion:
+  when: task.affects_multiple_projects OR task.complexity >= 8
+  
+  coordination_epic_creation:
+    title: "Cross-Project: {Epic Title}"
+    description: |
+      **Multi-Project Epic**
+      **Primary Tag Context**: {primary_tag}
+      **Affected Projects**: {list_of_discovered_projects}
+      **Taskmaster Coordination ID**: {task_id}
+      **Complexity**: {score}/10
+      
+      ## Epic Scope
+      {epic.description}
+      
+      ## Project Breakdown
+      {breakdown_by_discovered_project}
+      
+      ## Cross-Project Dependencies
+      {dependency_map_with_linear_links}
+      
+      ## Integration Points
+      {shared_infrastructure_touchpoints}
+      
+      ## Success Criteria
+      - [ ] All project implementations complete
+      - [ ] Cross-project integration tested
+      - [ ] All related Taskmaster tasks marked 'done'
+    
+    type: "Initiative" # Highest level in Linear hierarchy
+    labels: ["cross-project", "taskmaster-initiative", "complexity-{score}"]
+  
+  project_specific_epics:
+    for_each_affected_project:
+      title: "{Discovered Project}: {Project Specific Title}"
+      description: |
+        **Parent Initiative**: [Link to coordination epic]
+        **Project**: {discovered_project_name}
+        **Tag Context**: {project_specific_tag}
+        
+        ## Project Specific Scope
+        {project_specific_requirements}
+        
+        ## Integration Requirements
+        {how_this_project_integrates_with_others}
+      
+      parent: "{coordination_epic_id}"
+      labels: ["{discovered_project}", "taskmaster-project-epic"]
+  
+  post_creation:
+    - establish_cross_project_epic_hierarchy()
+    - coordinate_taskmaster_updates_across_tags()
+    - set_up_cross_project_dependency_tracking()
+```
+
+## Universal Status Synchronization
+
+### Taskmaster → Linear Status Mapping
+```yaml
+status_mapping:
+  taskmaster_to_linear:
+    "pending": "Backlog"
+    "in-progress": "In Progress" 
+    "review": "In Review"
+    "done": "Done"
+    "cancelled": "Cancelled"
+    "deferred": "Backlog" # with deferred label
+    "blocked": "Blocked"
+  
+  bidirectional_sync:
+    linear_to_taskmaster:
+      "Backlog": "pending"
+      "Todo": "pending"
+      "In Progress": "in-progress"
+      "In Review": "review"
+      "Done": "done"
+      "Cancelled": "cancelled"
+      "Blocked": "blocked"
+```
+
+### Sync Workflow
+```yaml
+status_sync_protocol:
+  taskmaster_update_triggers_linear:
+    - on_task_status_change: update_corresponding_linear_issue()
+    - on_subtask_completion: update_parent_epic_progress()
+    - on_task_completion: close_linear_issue_with_completion_notes()
+  
+  linear_update_triggers_taskmaster:
+    - on_issue_status_change: update_taskmaster_task_status()
+    - on_issue_completion: mark_taskmaster_task_done()
+    - on_issue_assignment: update_taskmaster_assignment_if_applicable()
+  
+  conflict_resolution:
+    - last_update_wins_with_notification()
+    - preserve_taskmaster_as_source_of_truth_for_technical_details()
+    - preserve_linear_as_source_of_truth_for_project_management()
+```
+
+## Universal Project-Type Specific Patterns
+
+### Web Application Projects
+```yaml
+web_project_linear_integration:
+  discovery_pattern: "/apps/web/{project_name}/"
+  
+  issue_labels: ["{project_name}", "web-app", "taskmaster-sync"]
+  
+  description_template: |
+    **Web Application**: {discovered_project_name}
+    **Framework**: {detected_from_package_json}
+    **Location**: `/apps/web/{project_name}/src/`
+    
+    ## Component/Feature Details
+    {task_specific_details}
+    
+    ## Browser Testing Requirements
+    {playwright_testing_requirements}
+    
+    ## Performance Considerations
+    {web_performance_requirements}
+  
+  testing_integration:
+    - reference_playwright_test_patterns()
+    - include_browser_compatibility_requirements()
+    - specify_accessibility_testing_needs()
+```
+
+### iOS Application Projects  
+```yaml
+ios_project_linear_integration:
+  discovery_pattern: "/apps/ios/{project_name}/"
+  
+  issue_labels: ["{project_name}", "ios-app", "taskmaster-sync"]
+  
+  description_template: |
+    **iOS Application**: {discovered_project_name}
+    **Framework**: {detected_from_xcodeproj}
+    **Location**: `/apps/ios/{project_name}/src/`
+    
+    ## iOS-Specific Details
+    {task_specific_details}
+    
+    ## Device Testing Requirements
+    {ios_testing_requirements}
+    
+    ## App Store Considerations
+    {app_store_compliance_requirements}
+  
+  testing_integration:
+    - reference_ios_testing_frameworks()
+    - include_device_compatibility_requirements()
+    - specify_app_store_review_considerations()
+```
+
+### API Service Projects
+```yaml
+api_project_linear_integration:
+  discovery_pattern: "/apps/api/{project_name}/"
+  
+  issue_labels: ["{project_name}", "api-service", "taskmaster-sync"]
+  
+  description_template: |
+    **API Service**: {discovered_project_name}
+    **Framework**: {detected_from_project_files}
+    **Location**: `/apps/api/{project_name}/src/`
+    
+    ## API Endpoint Details
+    {task_specific_details}
+    
+    ## Performance Requirements
+    {api_performance_requirements}
+    
+    ## Security Considerations
+    {api_security_requirements}
+  
+  testing_integration:
+    - reference_api_testing_patterns()
+    - include_load_testing_requirements()
+    - specify_security_testing_needs()
+```
+
+### Shared Infrastructure Projects
+```yaml
+shared_infrastructure_linear_integration:
+  discovery_pattern: "multiple locations or root level"
+  
+  issue_labels: ["shared-infrastructure", "monorepo", "taskmaster-sync"]
+  
+  description_template: |
+    **Shared Infrastructure**: {infrastructure_component}
+    **Scope**: Cross-project impact
+    **Affected Projects**: {list_of_affected_projects}
+    
+    ## Infrastructure Details
+    {task_specific_details}
+    
+    ## Cross-Project Impact
+    {impact_assessment_across_projects}
+    
+    ## Migration/Deployment Strategy
+    {deployment_coordination_requirements}
+  
+  coordination_requirements:
+    - coordinate_across_multiple_project_teams()
+    - establish_deployment_order_dependencies()
+    - plan_rollback_strategies_for_shared_changes()
+```
+
+## Duplicate Prevention Strategies
+
+### Comprehensive Search Patterns
+```yaml
+duplicate_detection:
+  search_strategies:
+    by_title_similarity:
+      - exact_title_match()
+      - fuzzy_title_matching(threshold=85%)
+      - key_phrase_extraction_and_matching()
+    
+    by_taskmaster_metadata:
+      - search_for_taskmaster_id_in_issue_descriptions()
+      - check_for_taskmaster_url_references()
+      - match_against_existing_taskmaster_sync_labels()
+    
+    by_project_and_scope:
+      - filter_by_discovered_project_labels()
+      - match_implementation_location_references()
+      - compare_epic_and_subtask_hierarchies()
+  
+  conflict_resolution:
+    exact_duplicate_found:
+      action: "skip_creation"
+      response: "Link existing Linear issue to Taskmaster task"
+      update: "Add Taskmaster metadata to existing issue"
+    
+    similar_issue_found:
+      action: "prompt_for_clarification"
+      response: "Ask if should merge or create separate issue"
+      options: ["merge_with_existing", "create_separate", "update_existing"]
+    
+    no_duplicates_found:
+      action: "proceed_with_creation"
+      response: "Create new Linear issue with full metadata"
+```
+
+### Prevention Workflows
+```yaml
+prevention_workflows:
+  before_creation:
+    # Mandatory duplicate check before any Linear issue creation
+    1. comprehensive_search_execution()
+    2. similarity_analysis_with_threshold()
+    3. user_confirmation_for_borderline_cases()
+    4. metadata_validation_for_uniqueness()
+  
+  during_creation:
+    # Add trackable metadata to prevent future duplicates
+    1. include_taskmaster_id_in_description()
+    2. add_taskmaster_sync_labels()
+    3. reference_source_tag_context()
+    4. embed_project_discovery_metadata()
+  
+  after_creation:
+    # Establish bidirectional tracking
+    1. update_taskmaster_with_linear_issue_id()
+    2. create_cross_reference_links()
+    3. establish_sync_webhook_if_available()
+    4. document_conversion_in_task_details()
+```
+
+## Quality Assurance Patterns
+
+### Information Completeness Validation
+```yaml
+quality_validation:
+  required_information:
+    basic_metadata:
+      - ✅ Taskmaster ID clearly referenced
+      - ✅ Tag context documented
+      - ✅ Discovered project name included
+      - ✅ Complexity score noted
+      - ✅ Source task location linkable
+    
+    implementation_details:
+      - ✅ Clear acceptance criteria defined
+      - ✅ Implementation path specified
+      - ✅ Testing requirements outlined
+      - ✅ Dependencies clearly listed
+      - ✅ Success criteria measurable
+    
+    project_context:
+      - ✅ Project type identified (web/ios/api/shared)
+      - ✅ Technology stack referenced
+      - ✅ Framework patterns included
+      - ✅ Integration points documented
+      - ✅ Performance considerations noted
+  
+  validation_workflow:
+    pre_creation_check:
+      - validate_all_required_information_present()
+      - confirm_description_clarity_and_completeness()
+      - verify_proper_labeling_and_categorization()
+      - check_appropriate_team_and_project_assignment()
+    
+    post_creation_verification:
+      - confirm_bidirectional_links_established()
+      - verify_hierarchy_relationships_if_applicable()
+      - test_status_sync_functionality()
+      - validate_search_and_discovery_metadata()
+```
+
+### Template Consistency Enforcement
+```yaml
+template_consistency:
+  universal_structure:
+    header_section:
+      - project_identification_with_discovery_metadata
+      - tag_context_reference
+      - taskmaster_source_linking
+      - complexity_and_scope_indication
+    
+    body_section:
+      - clear_problem_or_feature_description
+      - detailed_implementation_requirements
+      - testing_and_validation_strategy
+      - cross_project_dependencies_if_applicable
+    
+    footer_section:
+      - measurable_success_criteria
+      - completion_verification_checklist
+      - link_to_source_taskmaster_task
+      - sync_status_indicators
+  
+  template_enforcement:
+    - validate_template_adherence_before_creation()
+    - auto_populate_discoverable_information()
+    - prompt_for_missing_required_sections()
+    - maintain_consistency_across_project_types()
+```
+
+## Advanced Integration Scenarios
+
+### Cross-Tag Dependency Coordination
+```yaml
+cross_tag_coordination:
+  scenario: "Task in tag A depends on task completion in tag B"
+  
+  linear_approach:
+    1. create_coordination_epic:
+       title: "Cross-Tag Dependency: {Tag A Task} depends on {Tag B Task}"
+       description: "Coordinate completion across tag boundaries"
+       labels: ["cross-tag-dependency", "coordination-required"]
+    
+    2. link_dependent_issues:
+       - create_blocking_relationship_in_linear()
+       - reference_both_taskmaster_contexts()
+       - establish_notification_triggers()
+    
+    3. coordination_workflow:
+       - tag_b_completion_triggers_tag_a_notification()
+       - automatic_status_updates_across_dependencies()
+       - completion_verification_across_contexts()
+```
+
+### Multi-Release Epic Management
+```yaml
+multi_release_coordination:
+  scenario: "Large taskmaster epic spans multiple development cycles"
+  
+  linear_approach:
+    1. initiative_level_epic:
+       - create_overarching_initiative_in_linear()
+       - break_down_by_release_cycles()
+       - maintain_cross_cycle_dependency_tracking()
+    
+    2. release_specific_epics:
+       - create_release_1_epic_with_subset_of_tasks()
+       - create_release_2_epic_with_remaining_tasks()
+       - establish_release_dependency_chain()
+    
+    3. milestone_coordination:
+       - align_linear_milestones_with_taskmaster_phases()
+       - coordinate_release_planning_with_task_completion()
+       - maintain_scope_flexibility_for_task_adjustments()
+```
+
+## Integration Benefits
+
+✅ **Universal Project Support** - Works with any project structure discovered dynamically
+✅ **Tag-Aware Organization** - Respects tag boundaries and contexts
+✅ **Duplicate Prevention** - Comprehensive checking prevents issue proliferation
+✅ **Relationship Preservation** - Maintains complex task hierarchies in Linear
+✅ **Bidirectional Sync** - Changes flow both directions automatically
+✅ **Project-Type Optimization** - Specialized templates for web/iOS/API/shared projects
+✅ **Quality Assurance** - Built-in validation ensures complete, useful Linear issues
+✅ **Cross-Project Coordination** - Handles dependencies across project boundaries
+✅ **Scalable Architecture** - Supports monorepo growth with new projects and teams
+✅ **Context Preservation** - Maintains full traceability between systems
+
+Remember: Linear issues should enhance project coordination while Taskmaster remains the source of truth for technical implementation details. Always discover project context first, prevent duplicates, and maintain clear bidirectional traceability.

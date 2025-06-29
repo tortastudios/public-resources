@@ -1,0 +1,359 @@
+---
+description: 
+globs: 
+alwaysApply: true
+---
+---
+description: "Playwright MCP best practices and patterns for reliable test automation"
+globs:
+  - "**/*.spec.{js,ts}"
+  - "**/*.test.{js,ts}"
+  - "**/playwright.config.{js,ts}"
+  - "**/tests/**/*"
+alwaysApply: true
+---
+# Playwright MCP Best Practices
+
+## Core Principles
+
+- **Test user-visible behavior** - Focus on what users see and interact with, not implementation details
+- **Make tests isolated** - Each test should be completely independent with its own state
+- **Use stable selectors** - Prefer role-based locators and data-testid over brittle CSS selectors
+- **Leverage auto-waiting** - Use Playwright's built-in waiting mechanisms instead of manual timeouts
+
+## MCP Tool Usage Patterns
+
+### **Navigation & Page Management**
+
+```typescript
+// ✅ DO: Use proper navigation patterns
+await page.goto('https://example.com');
+await expect(page).toHaveURL(/.*dashboard/);
+
+// ✅ DO: Handle page state properly
+await page.waitForLoadState('networkidle');
+
+// ❌ DON'T: Use arbitrary timeouts
+await page.waitForTimeout(5000); // Avoid unless absolutely necessary
+```
+
+### **Element Location & Interaction**
+
+```typescript
+// ✅ DO: Use role-based locators (most resilient)
+await page.getByRole('button', { name: 'Submit' }).click();
+await page.getByRole('textbox', { name: 'Username' }).fill('user@example.com');
+
+// ✅ DO: Use data-testid for stable targeting
+await page.getByTestId('submit-button').click();
+
+// ✅ DO: Chain and filter locators
+const product = page.getByRole('listitem').filter({ hasText: 'Product 2' });
+await product.getByRole('button', { name: 'Add to cart' }).click();
+
+// ❌ DON'T: Use brittle CSS selectors
+await page.locator('button.btn-primary.large-btn').click();
+
+// ❌ DON'T: Use XPath unless absolutely necessary
+await page.locator('//button[@class="submit"]').click();
+```
+
+### **Assertions & Verification**
+
+```typescript
+// ✅ DO: Use web-first assertions with auto-waiting
+await expect(page.getByText('Welcome')).toBeVisible();
+await expect(page.getByRole('heading')).toHaveText('Dashboard');
+await expect(page.getByTestId('status')).toHaveClass(/success/);
+
+// ✅ DO: Use specific assertions
+await expect(page.getByRole('list')).toHaveCount(5);
+await expect(page.getByTestId('price')).toContainText('$29.99');
+
+// ❌ DON'T: Use manual assertions
+expect(await page.getByText('Welcome').isVisible()).toBe(true);
+
+// ❌ DON'T: Check for implementation details
+expect(await page.locator('.internal-class').count()).toBe(1);
+```
+
+### **Form Handling**
+
+```typescript
+// ✅ DO: Use semantic form interactions
+await page.getByLabel('Email').fill('user@example.com');
+await page.getByLabel('Password').fill('password123');
+await page.getByRole('button', { name: 'Login' }).click();
+
+// ✅ DO: Handle dropdowns properly
+await page.getByLabel('Country').selectOption('US');
+await page.getByRole('combobox').selectOption({ label: 'United States' });
+
+// ✅ DO: Handle file uploads
+await page.getByLabel('Upload file').setInputFiles('path/to/file.pdf');
+
+// ❌ DON'T: Use generic selectors for forms
+await page.locator('input[type="email"]').fill('user@example.com');
+```
+
+## MCP Tool Integration Patterns
+
+### **Browser Management**
+
+```typescript
+// ✅ DO: Use browser context properly
+test.beforeEach(async ({ page }) => {
+  // Each test gets a fresh browser context
+  await page.goto('/dashboard');
+});
+
+// ✅ DO: Handle multiple tabs/windows
+const newPage = await context.newPage();
+await newPage.goto('/settings');
+
+// ✅ DO: Use proper cleanup
+test.afterEach(async ({ page }) => {
+  // Playwright handles cleanup automatically
+});
+```
+
+### **Network & API Mocking**
+
+```typescript
+// ✅ DO: Mock external dependencies
+await page.route('**/api/users', route => route.fulfill({
+  status: 200,
+  contentType: 'application/json',
+  body: JSON.stringify({ users: mockUsers })
+}));
+
+// ✅ DO: Wait for specific network responses
+const responsePromise = page.waitForResponse('**/api/submit');
+await page.getByRole('button', { name: 'Submit' }).click();
+const response = await responsePromise;
+expect(response.status()).toBe(200);
+
+// ❌ DON'T: Test third-party services directly
+await page.goto('https://external-service.com/verify'); // Avoid
+```
+
+### **Screenshots & Debugging**
+
+```typescript
+// ✅ DO: Use tracing for debugging
+test('complex workflow', async ({ page }) => {
+  await page.goto('/complex-page');
+  // Complex interactions...
+  
+  // Automatic tracing on failure when configured
+});
+
+// ✅ DO: Take targeted screenshots
+await expect(page.getByTestId('chart')).toHaveScreenshot('chart-view.png');
+
+// ✅ DO: Use step annotations for clarity
+await test.step('Navigate to dashboard', async () => {
+  await page.goto('/dashboard');
+  await expect(page.getByRole('heading')).toHaveText('Dashboard');
+});
+```
+
+## Error Handling & Resilience
+
+### **Timeout Management**
+
+```typescript
+// ✅ DO: Configure appropriate timeouts
+test.setTimeout(30000); // 30 seconds for complex tests
+
+// ✅ DO: Use specific waits
+await page.waitForSelector('[data-testid="loading"]', { state: 'hidden' });
+await page.waitForFunction(() => window.dataLoaded === true);
+
+// ✅ DO: Handle dynamic content
+await expect(page.getByText('Dynamic content')).toBeVisible({ timeout: 10000 });
+```
+
+### **Error Recovery**
+
+```typescript
+// ✅ DO: Use soft assertions for multiple checks
+await expect.soft(page.getByTestId('status')).toHaveText('Success');
+await expect.soft(page.getByTestId('count')).toHaveText('5');
+// Test continues even if soft assertions fail
+
+// ✅ DO: Handle flaky elements gracefully
+const button = page.getByRole('button', { name: 'Submit' });
+await expect(button).toBeEnabled();
+await button.click();
+```
+
+## Test Organization & Structure
+
+### **Test Grouping**
+
+```typescript
+// ✅ DO: Use descriptive test names and groups
+test.describe('User Authentication', () => {
+  test('should login with valid credentials', async ({ page }) => {
+    // Test implementation
+  });
+  
+  test('should show error for invalid credentials', async ({ page }) => {
+    // Test implementation
+  });
+});
+
+// ✅ DO: Use tags for test categorization
+test('critical user flow @smoke @regression', async ({ page }) => {
+  // Test implementation
+});
+```
+
+### **Data Management**
+
+```typescript
+// ✅ DO: Use test data files
+import { testData } from '../data/users.json';
+
+test('create user with valid data', async ({ page }) => {
+  await page.getByLabel('Username').fill(testData.validUser.username);
+  await page.getByLabel('Email').fill(testData.validUser.email);
+});
+
+// ✅ DO: Generate unique test data
+const timestamp = Date.now();
+const testEmail = `test-${timestamp}@example.com`;
+```
+
+## Performance & Parallelization
+
+### **Parallel Execution**
+
+```typescript
+// ✅ DO: Design tests for parallel execution
+test.describe.configure({ mode: 'parallel' });
+
+test('independent test 1', async ({ page }) => {
+  // Completely independent test
+});
+
+test('independent test 2', async ({ page }) => {
+  // Another independent test
+});
+```
+
+### **Resource Optimization**
+
+```typescript
+// ✅ DO: Reuse authentication state
+test.use({ storageState: 'auth.json' });
+
+// ✅ DO: Optimize browser usage
+test.describe('Authenticated tests', () => {
+  test.use({ storageState: 'user-auth.json' });
+  
+  test('dashboard access', async ({ page }) => {
+    // User is already logged in
+    await page.goto('/dashboard');
+  });
+});
+```
+
+## Common Anti-Patterns to Avoid
+
+### **Timing Issues**
+
+```typescript
+// ❌ DON'T: Use arbitrary waits
+await page.waitForTimeout(3000);
+
+// ❌ DON'T: Use polling loops
+while (!(await page.getByText('Loaded').isVisible())) {
+  await page.waitForTimeout(100);
+}
+
+// ✅ DO: Use proper waiting mechanisms
+await expect(page.getByText('Loaded')).toBeVisible();
+```
+
+### **Selector Fragility**
+
+```typescript
+// ❌ DON'T: Use implementation-specific selectors
+await page.locator('.component-xyz-123').click();
+await page.locator('div:nth-child(3) > span').click();
+
+// ✅ DO: Use semantic selectors
+await page.getByRole('button', { name: 'Save' }).click();
+await page.getByLabel('Save document').click();
+```
+
+### **Test Dependencies**
+
+```typescript
+// ❌ DON'T: Create test dependencies
+test('create user', async ({ page }) => {
+  // Creates user with ID 123
+});
+
+test('update user', async ({ page }) => {
+  // Depends on user 123 existing from previous test
+});
+
+// ✅ DO: Make tests independent
+test('update user', async ({ page }) => {
+  // Create test user within this test
+  const user = await createTestUser();
+  // Then test update functionality
+});
+```
+
+## MCP-Specific Considerations
+
+### **Tool Integration**
+
+- Use `mcp_playwright_browser_snapshot` for accessibility-based element discovery
+- Leverage `mcp_playwright_browser_click` with proper element descriptions
+- Use `mcp_playwright_browser_type` with semantic field identification
+- Employ `mcp_playwright_browser_wait_for` with specific conditions
+
+### **Error Reporting**
+
+- Provide clear element descriptions in MCP tool calls
+- Use meaningful test step names for better debugging
+- Include context about expected vs actual behavior in assertions
+
+### **Resource Management**
+
+- Close browser contexts properly using `mcp_playwright_browser_close`
+- Manage multiple tabs efficiently with `mcp_playwright_browser_tab_*` tools
+- Handle file uploads through `mcp_playwright_browser_file_upload`
+
+## Configuration Best Practices
+
+```typescript
+// playwright.config.ts
+export default defineConfig({
+  testDir: './tests',
+  timeout: 30000,
+  expect: { timeout: 5000 },
+  fullyParallel: true,
+  retries: process.env.CI ? 2 : 0,
+  workers: process.env.CI ? 1 : undefined,
+  
+  use: {
+    trace: 'retain-on-failure',
+    screenshot: 'only-on-failure',
+    actionTimeout: 10000,
+  },
+  
+  projects: [
+    { name: 'chromium', use: { ...devices['Desktop Chrome'] } },
+    { name: 'firefox', use: { ...devices['Desktop Firefox'] } },
+    { name: 'webkit', use: { ...devices['Desktop Safari'] } },
+  ],
+});
+```
+
+Remember: The goal is to create tests that are **reliable**, **maintainable**, and **fast**. Focus on user workflows rather than implementation details, and leverage Playwright's powerful built-in capabilities for waiting and assertions.

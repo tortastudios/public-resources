@@ -11,7 +11,6 @@ This repository contains the complete Claude Code + Taskmaster workflow system.
 - `userprompt.md` - Task executor prompt template
 - `setup.sh` - Quick setup script
 - `LICENSE` - MIT License
-- `mcp.example.json` - Example MCP configuration (add your API keys)
 - `.gitignore` - Git ignore patterns
 
 ### .claude/
@@ -29,6 +28,20 @@ Claude Code custom commands and configuration:
   - `linear-sync-functions.md` - Sync function library
   - `README.md` - Commands documentation
 - `settings.local.json` - Claude local settings
+
+### .cursor/
+Cursor IDE configuration and rules:
+- `rules/` - Development workflow rules (10 files)
+  - `taskmaster.mdc` - Comprehensive Taskmaster command reference
+  - `taskmaster-base.mdc` - Base Taskmaster configuration rules
+  - `taskmaster-executor.mdc` - Task execution guidelines
+  - `taskmaster_to_linear.mdc` - Linear sync workflow rules
+  - `dev_workflow.mdc` - Development workflow process
+  - `context7-usage.mdc` - Context7 documentation lookup rules
+  - `playwright_mcp.mdc` - Playwright testing best practices
+  - `sapling.mdc` - Sapling SCM workflow rules
+  - `cursor_rules.mdc` - Cursor rule formatting guidelines
+  - `self_improve.mdc` - Rule improvement workflow
 
 ### .taskmaster/
 Taskmaster configuration and examples:
@@ -48,8 +61,9 @@ Additional documentation and templates:
   - `Taskmaster Workflow Technical Architecture.md` - Technical deep dive
 
 ## Total Contents
-- 26 files total
+- 37 files total
 - 11 Claude Code custom commands
+- 10 Cursor development rules
 - 2 example PRDs
 - Complete workflow documentation
 - All utilities and helper functions

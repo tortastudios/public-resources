@@ -1,0 +1,321 @@
+---
+description: 
+globs: .taskmaster/**/*.*, **/*tasks.json, .taskmasterconfig
+alwaysApply: false
+---
+---
+description: Base initialization protocol for all Taskmaster agents
+globs: 
+  - ".taskmaster/**/*"
+  - "**/tasks/**/*"
+  - ".taskmasterconfig"
+alwaysApply: false
+ruleType: auto-attached
+---
+
+# Taskmaster Universal Base Protocol
+
+This rule defines the initialization process for Taskmaster agents in any collaborative development environment.
+
+## ⚠️ CRITICAL: Universal Shared File Structure
+
+**All Taskmaster agents must understand the SHARED file structure with TAG SEPARATION:**
+
+### **Universal Monorepo Collaboration Model**
+```
+SHARED TASKMASTER STRUCTURE (Committed to Git):
+
+<PROJECT_ROOT> (any project root directory)
+├── .taskmaster/                    ← SHARED Taskmaster setup
+│   ├── config.json                ← Shared AI models, global settings
+│   ├── tasks/tasks.json           ← SHARED task file with TAG CONTEXTS
+│   │   └── Structure:
+│   │       {
+│   │         "tags": {
+│   │           "{developer}-{feature}": { "tasks": [...], "metadata": {...} },
+│   │           "{team}-{area}": { "tasks": [...], "metadata": {...} },
+│   │           "shared-{infrastructure}": { "tasks": [...], "metadata": {...} }
+│   │         },
+│   │         "currentTag": "{context-dependent}"
+│   │       }
+│   ├── docs/                     ← Shared project requirements (PRDs)
+│   └── templates/                ← Shared templates and examples
+├── {project_structure}/           ← Any project structure (apps/, src/, lib/, etc.)
+│   ├── {project_type}/           ← Web, mobile, API, desktop, etc.
+│   └── {project_name}/           ← Actual project implementations
+│       ├── src/                  ← Generated/modified code goes here
+│       └── {package_file}        ← Project-specific dependencies
+├── {workspace_indicator}         ← pnpm-workspace.yaml, lerna.json, nx.json, etc.
+└── .git/                         ← Version control
+
+UNIVERSAL PATTERNS:
+✅ Single shared tasks.json - no file conflicts
+✅ Tag-based contexts - personal vs shared work separation  
+✅ MCP tools work for all team members
+✅ Background agents can access committed structure
+✅ Shared PRDs, templates, and configurations
+✅ Flexible project structure support
+```
+
+### **Universal Tag Context Discovery Protocol**
+**Run this BEFORE any Taskmaster operation:**
+```python
+def detect_universal_setup():
+    """MANDATORY: Detect Taskmaster setup in any project structure"""
+    root = detect_project_root()  # Works with any VCS root
+    
+    # Check for shared Taskmaster structure
+    taskmaster_dir = os.path.join(root, '.taskmaster')
+    if exists(os.path.join(taskmaster_dir, 'config.json')):
+        tasks_file = os.path.join(taskmaster_dir, 'tasks', 'tasks.json')
+        if exists(tasks_file):
+            return 'collaborative', root, tasks_file
+    
+    # Check for legacy format  
+    if exists(os.path.join(root, '.taskmasterconfig')):
+        return 'legacy', root, None
+        
+    return None, root, None
+
+def determine_universal_tag_context():
+    """Determine appropriate tag context based on available information"""
+    context_strategies = [
+        'check_existing_current_tag',
+        'infer_from_work_context', 
+        'analyze_directory_patterns',
+        'examine_conversation_context',
+        'prompt_user_for_clarification'
+    ]
+    
+    for strategy in context_strategies:
+        result = execute_strategy(strategy)
+        if result:
+            return result
+    
+    return None  # Requires user clarification
+
+def execute_strategy(strategy):
+    """Execute specific context discovery strategy"""
+    if strategy == 'check_existing_current_tag':
+        return check_tasks_json_current_tag()
+    elif strategy == 'infer_from_work_context':
+        return infer_from_current_work()
+    elif strategy == 'analyze_directory_patterns':
+        return analyze_directory_structure()
+    elif strategy == 'examine_conversation_context':
+        return extract_context_from_conversation()
+    elif strategy == 'prompt_user_for_clarification':
+        return prompt_for_tag_context()
+
+def determine_universal_role():
+    """Determine agent role based on context and task assignment"""
+    if has_specific_task_assignment():
+        return 'task_agent'
+    elif has_scope_specification():
+        return 'scoped_orchestrator'
+    else:
+        return 'full_orchestrator'
+```
+
+## Agent Types (Universal)
+
+1. **Orchestrator Agent** (Human-initiated)
+   - Uses: fetch_rules(["taskmaster-orchestrator"]) for coordination protocols
+   - Monitors shared tasks.json across all tags
+   - Spawns task agents with proper tag context
+   - Manages cross-tag dependencies
+   - Coordinates workflows in any project structure
+
+2. **Task Agent** (Orchestrator-spawned)
+   - Uses: fetch_rules(["taskmaster-agent"]) for execution protocols
+   - Works within specific tag context
+   - Updates shared tasks.json with tag isolation
+   - Reports back via Taskmaster and Linear
+   - Respects tag boundaries
+
+## Universal Tag-Aware Initialization
+
+```python
+def determine_role_and_context():
+    # CRITICAL: Always start with discovery
+    config_status, root_path, tasks_file = detect_universal_setup()
+    
+    if config_status is None:
+        raise Exception("Taskmaster not initialized - user must run 'task-master init' first")
+    
+    # Get tag context for this session
+    tag_context = determine_universal_tag_context()
+    
+    # If we couldn't determine tag context, ask for clarification
+    if not tag_context:
+        return prompt_user_for_tag_context()
+    
+    # Determine role based on task context and tag
+    if has_specific_task_context():
+        return 'task', tag_context
+    return 'orchestrator', tag_context
+
+def has_specific_task_context():
+    """Check if this agent was spawned for a specific task"""
+    return (
+        'TASK_ID' in context or
+        'TASKMASTER_TASK_ID' in context or
+        current_message_contains_task_reference()
+    )
+```
+
+## Universal Tag Naming Patterns
+
+```yaml
+universal_tag_patterns:
+  personal_work:
+    pattern: "{developer}-{area}"
+    examples: ["alice-frontend", "bob-backend", "chris-mobile", "diana-devops"]
+    description: "Personal development work on specific areas"
+  
+  collaborative_work:
+    pattern: "shared-{area}" or "team-{area}"
+    examples: ["shared-infrastructure", "team-documentation", "shared-testing"]
+    description: "Collaborative work affecting multiple developers"
+  
+  feature_work:
+    pattern: "{feature}-{area}" or "{sprint}-{feature}"
+    examples: ["auth-system", "payment-integration", "sprint1-onboarding"]
+    description: "Feature-specific work spanning multiple developers"
+  
+  project_work:
+    pattern: "{project}-{area}"
+    examples: ["webapp-frontend", "api-backend", "mobile-ios"]
+    description: "Project-specific work with clear boundaries"
+
+universal_tag_discovery_strategies:
+  1. examine_current_tag: "Check tasks.json for currently active tag"
+  2. analyze_conversation: "Look for project/developer mentions in conversation"
+  3. check_file_paths: "Infer from file paths being discussed"
+  4. analyze_directory_context: "Determine from current working directory"
+  5. prompt_user: "Ask user to specify tag context when unclear"
+
+universal_tag_switching_commands:
+  mcp_tools:
+    - "use_tag(name='tag-name')"
+    - "list_tags()" 
+    - "add_tag(name='new-tag')"
+  
+  cli_commands:
+    - "task-master use-tag tag-name"
+    - "task-master list-tags"
+    - "task-master add-tag tag-name"
+```
+
+## Universal Project Structure Patterns
+
+```yaml
+supported_project_structures:
+  monorepo_patterns:
+    - "apps/{type}/{name}"      # Nx, Lerna style
+    - "packages/{name}"         # Classic monorepo
+    - "projects/{name}"         # Angular workspace
+    - "services/{name}"         # Microservices
+    - "modules/{name}"          # Modular architecture
+  
+  single_repo_patterns:
+    - "src/"                    # Standard source directory
+    - "lib/"                    # Library structure  
+    - "{name}/"                 # Project-specific naming
+  
+  project_type_detection:
+    - package.json → "nodejs"
+    - Cargo.toml → "rust" 
+    - pom.xml → "java"
+    - requirements.txt → "python"
+    - *.xcodeproj → "ios"
+    - *.sln → "dotnet"
+    - go.mod → "go"
+    - pubspec.yaml → "flutter"
+    - composer.json → "php"
+```
+
+## Universal Collaborative Communication Flow
+
+```
+Developer → Determine Tag Context → Orchestrator (Tag-Aware) → Task Agents (Tag-Specific) → Linear → Integration
+```
+
+- **Tag Context Discovery**: Agents determine appropriate tag based on work context
+- **Tag Isolation**: Each developer/project works in isolated tag contexts
+- **Shared Resources**: Common infrastructure tasks use shared tags
+- **Cross-Pollination**: Agents can reference other tags when needed
+- **Linear Integration**: Issues organized by tag context
+- **Conflict Prevention**: Same file, different contexts = no merge conflicts
+
+## Universal Collaborative Workflow
+
+1. **Agent determines context**: Analyze work context to determine appropriate tag
+2. **Switch to tag context**: `use_tag("determined-tag-name")`
+3. **Orchestrator monitors tag**: Checks for ready tasks in active tag
+4. **Orchestrator spawns agents**: Creates tag-aware task agents with integration protocols
+5. **Agents execute in context**: Full task lifecycle within tag boundaries
+6. **Linear tracks by tag**: Via taskmaster_to_linear rule for issue management
+7. **Testing integration**: Via playwright_mcp rule for automated testing
+8. **Shared visibility**: All developers can view other tags if needed
+
+## Integration Protocol Loading
+
+```yaml
+integration_awareness:
+  when_complexity_requires_linear:
+    trigger: task.complexity >= 4 OR task.has_dependencies
+    action: load_rules(["taskmaster_to_linear"])
+    purpose: "Issue tracking and project coordination"
+  
+  when_testing_required:
+    trigger: task.affects_ui OR task.complexity >= 3 OR project.type == "web"
+    action: load_rules(["playwright_mcp"])
+    purpose: "Automated testing patterns and quality assurance"
+  
+  when_research_needed:
+    trigger: task.complexity >= 6 OR task.involves_new_technology
+    action: enable_context7_integration()
+    purpose: "Research-backed implementation guidance"
+```
+
+## Benefits of Universal Tag-Based Approach
+
+✅ **No File Conflicts** - Single shared file with logical separation
+✅ **MCP Tool Compatibility** - All tools work with shared structure  
+✅ **Background Agent Support** - Committed files accessible to automations
+✅ **Flexible Collaboration** - Easy switching between personal and shared work
+✅ **Clean Organization** - Clear separation of concerns with shared visibility
+✅ **Scalable Team Growth** - New developers get their own tag contexts
+✅ **Context-Aware Operations** - Agents work in appropriate context automatically
+✅ **Project-Agnostic** - Works with any development project structure
+
+This approach maintains the benefits of shared tooling while preventing conflicts through logical separation within the same file structure.
+
+## Rule Loading Order for Maximum Compatibility
+
+```yaml
+# MANDATORY: Always load rules in this order for full compatibility
+rule_loading_sequence:
+  1. taskmaster_base:
+     when: "Always first - provides universal foundation"
+     provides: ["file_structure", "tag_patterns", "discovery_protocols"]
+  
+  2. role_specific_rule:
+     orchestrator: fetch_rules(["taskmaster-orchestrator"])
+     task_agent: fetch_rules(["taskmaster-agent"])
+     depends_on: ["taskmaster-base"]
+  
+  3. integration_rules:
+     linear_integration: fetch_rules(["taskmaster_to_linear"])
+     testing_integration: fetch_rules(["playwright_mcp"])
+     when: "Based on task complexity and requirements"
+     depends_on: ["taskmaster-base", "role_specific_rule"]
+
+# Compatibility Verification
+compatibility_checks:
+  - verify_base_rule_loaded_first()
+  - confirm_tag_context_discovery_working()
+  - validate_project_structure_detection()
+  - test_integration_rule_loading()
+```

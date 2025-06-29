@@ -1,0 +1,131 @@
+---
+description: 
+globs: 
+alwaysApply: false
+---
+# Context7 Documentation Lookup Protocol
+
+## Core Principle: Always Source from Official Documentation
+
+- **NEVER assume implementation patterns** from other projects in the monorepo
+- **ALWAYS use Context7** for technology-specific guidance
+- **Proactively look up documentation** when encountering new libraries or frameworks
+
+## When to Use Context7 (Required)
+
+### 1. **Technology Discovery**
+```typescript
+// ❌ DON'T: Copy patterns from other projects
+// "I see admin uses Next.js like this, so I'll do the same..."
+
+// ✅ DO: Look up the official approach
+// First: mcp_context7_resolve-library-id with libraryName: "next.js"
+// Then: mcp_context7_get-library-docs with the resolved ID
+```
+
+### 2. **Framework/Library Usage**
+- **New technology encountered**: Immediately resolve and fetch docs
+- **Examples requiring Context7 lookup**:
+  - TortaStand uses Phaser → Look up Phaser docs
+  - Admin uses Next.js → Look up Next.js docs
+  - New package added → Look up package docs
+  - Database library (Prisma, Drizzle, etc.) → Look up ORM docs
+
+### 3. **Error Resolution**
+```bash
+# When you see an error like:
+Module not found: Can't resolve 'phaser'
+
+# ✅ DO: 
+# 1. mcp_context7_resolve-library-id with libraryName: "phaser"
+# 2. mcp_context7_get-library-docs to understand proper installation
+# 3. Follow official documentation for setup
+```
+
+### 4. **Implementation Decisions**
+- **Before implementing any feature**: Check official docs
+- **Before using any API**: Verify current syntax
+- **Before configuring**: Review official configuration guide
+
+## Context7 Usage Pattern
+
+### Step 1: Resolve Library ID
+```typescript
+// Always start by resolving the library name
+await mcp_context7_resolve-library-id({
+  libraryName: "phaser" // or "next.js", "react", etc.
+});
+```
+
+### Step 2: Fetch Documentation
+```typescript
+// Use the resolved ID to get documentation
+await mcp_context7_get-library-docs({
+  context7CompatibleLibraryID: "/photonstorm/phaser", // from resolve step
+  tokens: 10000, // adjust based on need
+  topic: "game configuration" // optional: focus on specific topic
+});
+```
+
+## Common Scenarios
+
+### Scenario: Working on TortaStand (Phaser Game)
+```typescript
+// ❌ WRONG: "I'll check how admin project structures things"
+// ✅ RIGHT: 
+// 1. Resolve: mcp_context7_resolve-library-id({ libraryName: "phaser" })
+// 2. Get docs: mcp_context7_get-library-docs({ context7CompatibleLibraryID: "...", topic: "game scenes" })
+```
+
+### Scenario: Database Integration
+```typescript
+// ❌ WRONG: "I'll copy the Prisma setup from admin"
+// ✅ RIGHT:
+// 1. Resolve: mcp_context7_resolve-library-id({ libraryName: "prisma" })
+// 2. Get docs: mcp_context7_get-library-docs({ context7CompatibleLibraryID: "...", topic: "schema definition" })
+```
+
+### Scenario: Build/Runtime Errors
+```bash
+# Error: Cannot find module 'xyz' or Build failed
+# ✅ RIGHT:
+# 1. Identify the technology causing the error
+# 2. Look up official troubleshooting docs via Context7
+# 3. Follow official resolution steps
+```
+
+## Benefits of This Approach
+
+- **Accuracy**: Always using latest official documentation
+- **Best Practices**: Following recommended patterns, not inherited ones
+- **Version Awareness**: Getting docs for the actual version in use
+- **Reduced Errors**: Avoiding outdated or project-specific patterns
+
+## Integration with Taskmaster Workflow
+
+When executing tasks:
+1. **Read task details** to understand technology requirements
+2. **Proactively fetch documentation** for all mentioned technologies
+3. **Reference official docs** in implementation decisions
+4. **Log documentation sources** in subtask updates
+
+## Anti-Patterns to Avoid
+
+- ❌ **Pattern Copying**: "The admin project does X, so I'll do X"
+- ❌ **Assumption Making**: "This probably works like Y"
+- ❌ **Outdated Knowledge**: Using patterns from training data
+- ❌ **Cross-Project Inference**: "All Next.js apps in this repo do Z"
+
+## Priority Technologies for Context7
+
+Based on the monorepo structure, always look up:
+- **Phaser** (TortaStand game engine)
+- **Next.js** (Admin panel framework)
+- **React** (UI library)
+- **Prisma** (Database ORM)
+- **TypeScript** (Type system)
+- **Tailwind CSS** (Styling)
+- **Swift/SwiftUI** (iOS development)
+- **Any npm package** mentioned in tasks
+
+Remember: **Context7 is your source of truth**, not existing project code!

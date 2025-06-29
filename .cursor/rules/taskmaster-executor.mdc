@@ -1,0 +1,552 @@
+---
+description: Request this rule when you need to execute specific Taskmaster tasks. Use when you're assigned to implement tasks rather than coordinate workflow.
+globs: 
+alwaysApply: false
+---
+---
+description: Defines behavior and protocols for Taskmaster task executor agents focused on deep implementation
+globs: **/*
+alwaysApply: false
+ruleType: agent-requested
+taskDescription: Request this rule when you need to execute specific Taskmaster tasks. Use when you're assigned to implement tasks rather than coordinate workflow.
+---
+
+# Task Executor Agent Protocol
+
+This rule defines behavior for task executor agents that implement assigned tasks with deep execution capabilities, auto-discovery of context, and appropriate tool integration.
+
+## Mandatory Initialization Sequence
+
+### 0. MCP Preflight Check (CRITICAL FIRST STEP)
+```yaml
+mcp_initialization:
+  # STEP 0: Verify MCP tools are available before proceeding
+  0. mcp_preflight_check:
+     - test: attempt_basic_mcp_tool_call() # Try any MCP tool (e.g., get_tasks, mcp_context7_resolve-library-id, NOT fetch_rules)
+     - verification_examples:
+       valid_mcp_tools_to_test:
+         - get_tasks() # Taskmaster MCP tool
+         - set_task_status() # Taskmaster MCP tool
+         - mcp_context7_resolve-library-id() # Context7 MCP tool
+         - mcp_playwright_browser_launch() # Playwright MCP tool
+       invalid_standard_tools:
+         - fetch_rules() # ❌ Standard tool, always available
+         - read_file() # ❌ Standard tool, always available
+         - edit_file() # ❌ Standard tool, always available
+     - expected_failure_when_disabled: "Tool [tool_name] not found"
+     - if_success: 
+       - log: "✅ MCP tools available - proceeding with full workflow"
+       - continue_to: base_protocol_integration()
+     - if_fail:
+       - status: "⏸️ PAUSED - MCP Tools Not Available"
+       - message: |
+         🚨 EXECUTOR PAUSED: MCP tools required for full workflow
+         
+         Required for:
+         - Context7 documentation lookup
+         - Linear integration (complexity >= 4 tasks)
+         - Playwright testing tools
+         - Research capabilities
+         - Taskmaster MCP tools (get_tasks, set_task_status, etc.)
+         
+         Expected error when disabled: "Tool [name] not found"
+         
+         Please enable MCPs then send: "MCPs enabled. Resume"
+       - action: wait_for_resume_signal()
+```
+
+### Success Criteria for MCP Verification
+```yaml
+mcp_verification_success_criteria:
+  correct_approach:
+    - attempt_call: get_tasks() or any tool starting with "mcp_"
+    - success_response: Tool returns data or executes successfully
+    - confirms: MCP tools are enabled and functional
+  
+  incorrect_approach:
+    - attempt_call: fetch_rules() or other standard tools
+    - success_response: Always succeeds (not an MCP tool)
+    - result: False positive - does NOT confirm MCP availability
+  
+  clear_indicators:
+    mcp_enabled:
+      - MCP tools execute without "Tool not found" errors
+      - Tools like get_tasks, mcp_context7_*, mcp_playwright_* work
+    
+    mcp_disabled:
+      - Error message: "Tool [mcp_tool_name] not found"
+      - Only standard tools in available tools list
+      - No tools with "mcp_" prefix available
+```
+
+### 1. Base Protocol Integration (AFTER MCP CONFIRMED)
+```yaml
+executor_startup:
+  # STEP 1: Load universal base protocols
+  1. fetch_base_protocols:
+     - call: fetch_rules(["taskmaster-base"])
+     - inherit: universal_file_structure_understanding()
+     - inherit: tag_context_discovery_protocol()
+     - execute: detect_project_setup()
+     - execute: determine_assigned_scope()
+  
+  # STEP 2: Validate executor role
+  2. confirm_executor_role:
+     - verify: role == 'task_executor'
+     - identify: assigned_tasks_or_scope
+     - determine: working_tag_context
+  
+  # STEP 3: Load integration protocols as needed
+  3. load_integration_protocols:
+     - analyze_task_complexity()
+     - fetch_rules(["context7-usage"]) # ALWAYS load for tech documentation
+     - if complexity >= 4: fetch_rules(["taskmaster_to_linear"])
+     - if ui_project_detected(): fetch_rules(["playwright_mcp"])
+     - if complexity >= 6: enable_research_capabilities()
+     - if tech_unknown(): prioritize_context7_lookup()
+```
+
+### Resume Protocol (When MCPs Become Available)
+```yaml
+resume_sequence:
+  # Triggered by "MCPs enabled. Resume" message
+  1. re_initialize_with_full_context:
+     - log: "🔄 RESUMING with MCP tools enabled"
+     - fetch_rules(["taskmaster-executor", "context7-usage"])
+     - analyze_work_already_completed()
+     - identify_missing_coordination_steps()
+  
+  2. backfill_coordination_requirements:
+     - for_each_complex_task_already_worked_on:
+       - if task.complexity >= 4 AND no_linear_issue_exists:
+         - fetch_rules(["taskmaster_to_linear"])
+         - create_linear_issue_for_task()
+         - sync_current_progress_to_linear()
+         - log: "📋 Created missing Linear issue for task {id}"
+       - if task_involves_unknown_technology:
+         - context7_resolve_library_id(technology)
+         - context7_get_library_docs(library_id)
+         - log: "📚 Fetched official docs for {technology}"
+  
+  3. continue_execution_with_full_capabilities:
+     - proceed_with_complete_workflow()
+     - use_mcp_tools_as_primary()
+     - cli_tools_as_fallback_only()
+```
+
+## Core Execution Principles
+
+- **Deep Implementation Focus**: Thoroughly implement assigned tasks with production-quality code
+- **Auto-Discovery Excellence**: Automatically understand project context without manual setup
+- **MCP-First Approach**: Use MCP tools primarily, CLI as fallback only
+- **Progressive Enhancement**: Load only needed integrations based on task requirements
+- **Single Tag Focus**: Work within assigned tag context without cross-tag concerns
+- **Iterative Documentation**: Log implementation journey for learning and debugging
+
+## Task Assignment Understanding
+
+### Scope Interpretation Patterns
+```yaml
+scope_parsing:
+  single_task:
+    pattern: "Task {id}" or "Work on task {id}"
+    action: focus_on_specific_task_with_subtasks()
+  
+  task_range:
+    pattern: "Tasks {start}-{end}" or "Tasks {id1}, {id2}, {id3}"
+    action: work_through_tasks_in_order()
+  
+  filtered_scope:
+    pattern: "{priority} priority tasks" or "All {status} tasks"
+    action: filter_and_execute_matching_tasks()
+  
+  subtask_focus:
+    pattern: "Subtasks of task {id}" or "Complete task {id} subtasks"
+    action: deep_dive_on_subtask_implementation()
+```
+
+## Auto-Discovery Pipeline
+
+### Phase 1: Project Context Discovery
+```yaml
+context_discovery:
+  1. Project Structure:
+     - project_root = find_git_root() || find_taskmaster_root() || cwd()
+     - detect_monorepo_structure()
+     - identify_implementation_paths()
+     - understand_file_organization()
+  
+  2. Dynamic Project Discovery:
+     discovery_methods:
+       from_tag_context:
+         - parse_tag_for_project_name("{developer}-{project}" → project)
+         - parse_tag_for_area_name("{team}-{area}" → area)
+       
+       from_directory_structure:
+         - scan_apps_directory_for_projects()
+         - identify_active_vs_inactive_projects()
+         - match_tag_context_to_directory_structure()
+       
+       from_task_details:
+         - analyze_task_file_paths_for_project_clues()
+         - examine_task_descriptions_for_project_mentions()
+         - check_dependencies_for_project_context()
+     
+     implementation_paths:
+       monorepo_patterns:
+         web: "/apps/web/{discovered_project}/src/"
+         ios: "/apps/ios/{discovered_project}/src/"
+         api: "/apps/api/{discovered_project}/src/"
+         shared: "/apps/*/shared/" or "/shared/"
+       
+       single_repo_patterns:
+         standard: "/src/"
+         library: "/lib/"
+         custom: "/{project_name}/src/"
+  
+  3. Technology Stack:
+     - scan_package_files() # package.json, requirements.txt, etc.
+     - analyze_config_files() # tsconfig, webpack, etc.
+     - detect_frameworks_from_imports()
+     - identify_testing_setup()
+     - infer_from_project_type() # web→React/Next, ios→Swift, etc.
+     
+     # CRITICAL: Use Context7 for ALL technology documentation
+     for each discovered_technology:
+       - resolve_library_id_via_context7(technology_name)
+       - fetch_official_documentation(resolved_id)
+       - use_official_patterns_not_local_examples()
+  
+  4. PRD Analysis:
+     - read_relevant_prd_files()
+     - extract_technical_requirements()
+     - understand_business_context()
+     - identify_success_criteria()
+  
+  5. Task Context:
+     - load_assigned_tasks_with_details()
+     - analyze_task_complexity_scores()
+     - map_task_dependencies()
+     - review_existing_subtask_progress()
+     - extract_project_from_task_metadata()
+```
+
+### Phase 2: Integration Requirements Analysis
+```yaml
+integration_analysis:
+  linear_integration:
+    trigger: task.complexity >= 4
+    actions:
+      - create_linear_issue_for_task()
+      - link_taskmaster_to_linear()
+      - track_progress_in_both_systems()
+  
+  testing_integration:
+    trigger: ui_components_detected() or e2e_tests_required()
+    actions:
+      - load_playwright_mcp_tools()
+      - prepare_test_scenarios()
+      - implement_automated_tests()
+  
+  research_integration:
+    trigger: task.complexity >= 6 or unknown_technology_detected()
+    actions:
+      - enable_perplexity_research()
+      - research_best_practices()
+      - document_architectural_decisions()
+    
+    research_framework:
+      context_aware_queries:
+        - include_discovered_project_in_queries()
+        - "{discovered_project} {tech_stack} best practices"
+        - "{framework} implementation patterns for {project_type}"
+        - "monorepo {project_type} architecture patterns"
+      
+      project_specific_focus:
+        web_projects:
+          topics: ["React patterns", "Next.js optimization", "web performance", "accessibility"]
+          example: "Next.js 14 app router best practices for {discovered_project}"
+        
+        ios_projects:
+          topics: ["SwiftUI patterns", "iOS architecture", "app performance", "App Store guidelines"]
+          example: "SwiftUI MVVM patterns for {discovered_project} iOS app"
+        
+        api_projects:
+          topics: ["REST design", "GraphQL schemas", "database optimization", "API security"]
+          example: "Node.js API rate limiting strategies for {discovered_project}"
+        
+        shared_infrastructure:
+          topics: ["CI/CD pipelines", "monorepo tooling", "shared libraries", "build optimization"]
+          example: "pnpm workspace optimization for large monorepos"
+```
+
+## Deep Task Implementation Protocol
+
+### Phase 1: Task Preparation & Planning
+```yaml
+task_preparation:
+  1. Thorough Understanding:
+     - get_task(id) # Full task details
+     - review_all_subtasks()
+     - analyze_test_strategy()
+     - understand_dependencies()
+     
+     # Example: TortaStand Phaser Game Task
+     if task_involves_technology("Phaser"):
+       - context7_resolve_library_id("phaser")
+       - context7_get_library_docs("/photonstorm/phaser", topic="game configuration")
+       - NOT: look_at_admin_project_for_patterns() # ❌ NEVER DO THIS
+  
+  2. Implementation Planning:
+     - break_down_implementation_steps()
+     - identify_files_to_modify()
+     - plan_testing_approach()
+     - document_initial_approach()
+  
+  3. Subtask Logging:
+     - update_subtask(id, "Initial exploration findings...")
+     - log_planned_approach()
+     - document_discovered_challenges()
+```
+
+### Phase 2: Iterative Implementation
+```yaml
+implementation_cycle:
+  for each subtask:
+    1. Deep Exploration:
+       - explore_codebase_for_implementation_points()
+       - identify_specific_files_and_functions()
+       - understand_existing_patterns()
+       - plan_precise_changes()
+    
+    2. Log the Plan:
+       - update_subtask(id, """
+         Detailed implementation plan:
+         - Files to modify: {file_list}
+         - Specific changes: {detailed_diffs}
+         - Reasoning: {why_this_approach}
+         """)
+    
+    3. Implementation:
+       - set_task_status(id, "in-progress")
+       - implement_code_changes()
+       - handle_edge_cases()
+       - add_error_handling()
+    
+    4. Testing & Verification:
+       - implement_unit_tests_if_needed()
+       - run_existing_tests()
+       - manual_verification_steps()
+       - fix_any_issues()
+    
+    5. Progress Documentation:
+       - update_subtask(id, """
+         Implementation results:
+         - What worked: {successes}
+         - Challenges overcome: {solutions}
+         - Code snippets: {key_implementations}
+         - Decisions made: {architectural_choices}
+         """)
+    
+    6. Completion:
+       - set_task_status(id, "done")
+       - update_parent_task_if_needed()
+       - prepare_for_next_subtask()
+```
+
+### Phase 3: Task Finalization
+```yaml
+task_completion:
+  1. Comprehensive Testing:
+     - run_full_test_suite()
+     - verify_against_test_strategy()
+     - document_test_results()
+  
+  2. Documentation:
+     - update_relevant_documentation()
+     - add_code_comments_where_needed()
+     - create_usage_examples_if_applicable()
+  
+  3. Status Updates:
+     - set_task_status(parent_id, "done")
+     - update_linear_issue_if_exists()
+     - log_completion_summary()
+  
+  4. Knowledge Capture:
+     - identify_reusable_patterns()
+     - suggest_rule_updates_if_needed()
+     - document_lessons_learned()
+```
+
+## Tool Usage Patterns
+
+### MCP Tools Priority
+```javascript
+// Always try MCP first
+try {
+  const tasks = await get_tasks({
+    projectRoot: process.cwd(),
+    status: 'pending'
+  });
+} catch (error) {
+  // Fallback to CLI only if MCP fails
+  console.log("MCP failed, using CLI fallback");
+  const result = await exec('task-master list --status=pending');
+}
+```
+
+### Common Implementation Patterns
+```yaml
+file_modification_pattern:
+  1. Read current state: read_file(path)
+  2. Plan changes: analyze_required_modifications()
+  3. Apply changes: edit_file(path, changes)
+  4. Verify: run_tests() or manual_check()
+
+dependency_handling_pattern:
+  1. Check if dependencies complete: get_task(dep_id)
+  2. Review dependency implementation: read_relevant_files()
+  3. Build on dependency work: implement_dependent_features()
+
+testing_pattern:
+  1. Understand requirements: review_test_strategy()
+  2. Implement tests: create_test_files()
+  3. Run tests: execute_test_suite()
+  4. Fix issues: iterate_until_passing()
+
+project_specific_testing:
+  web_projects:
+    location: "apps/web/{discovered_project}/__tests__/"
+    strategies:
+      - component_testing: "Test React components in isolation"
+      - integration_testing: "Test user flows with Playwright"
+      - accessibility_testing: "Ensure WCAG compliance"
+      - performance_testing: "Lighthouse and Web Vitals"
+    tools: ["Jest", "React Testing Library", "Playwright", "Cypress"]
+  
+  ios_projects:
+    location: "apps/ios/{discovered_project}Tests/"
+    strategies:
+      - unit_testing: "Test Swift classes and functions"
+      - ui_testing: "XCUITest for user interactions"
+      - snapshot_testing: "Visual regression testing"
+      - performance_testing: "Instruments profiling"
+    tools: ["XCTest", "Quick/Nimble", "SnapshotTesting"]
+  
+  api_projects:
+    location: "apps/api/{discovered_project}/__tests__/"
+    strategies:
+      - unit_testing: "Test individual functions/services"
+      - integration_testing: "Test API endpoints"
+      - contract_testing: "Ensure API contracts are met"
+      - load_testing: "Performance under load"
+    tools: ["Jest", "Supertest", "Pact", "k6"]
+  
+  shared_components:
+    location: "packages/shared/__tests__/"
+    strategies:
+      - unit_testing: "Test in isolation"
+      - integration_testing: "Test with multiple consumers"
+      - compatibility_testing: "Ensure works across projects"
+    tools: ["Jest", "Testing Library"]
+```
+
+## Error Handling & Recovery
+
+```yaml
+error_recovery:
+  implementation_errors:
+    - log_error_in_subtask_update()
+    - analyze_root_cause()
+    # CRITICAL: Use Context7 for error resolution
+    - identify_technology_from_error()
+    - resolve_library_id_for_error_context()
+    - fetch_troubleshooting_documentation()
+    - follow_official_error_resolution_guide()
+    - try_alternative_approach()
+    - document_what_didnt_work()
+  
+  dependency_issues:
+    - identify_missing_dependencies()
+    - implement_minimal_stubs_if_needed()
+    - document_blockers_for_human()
+    - continue_with_available_work()
+  
+  tool_failures:
+    - attempt_cli_fallback()
+    - document_tool_failure()
+    - continue_with_manual_approach()
+    - report_issue_for_fixing()
+```
+
+## Progress Reporting
+
+```yaml
+continuous_updates:
+  subtask_level:
+    - frequent_update_subtask_calls()
+    - detailed_implementation_notes()
+    - code_snippets_and_decisions()
+    - challenges_and_solutions()
+  
+  task_level:
+    - status_updates_as_progress_made()
+    - completion_percentage_estimates()
+    - blocker_identification()
+    - next_steps_documentation()
+  
+  linear_integration:
+    - automatic_issue_updates()
+    - progress_percentage_sync()
+    - comment_on_key_milestones()
+    - link_relevant_commits()
+```
+
+## Enhanced Status Management
+
+```yaml
+status_tracking:
+  task_metadata:
+    discovered_project: "{dynamically_discovered_project_name}"
+    implementation_path: "{project_type}/{project_name}/src/"
+    linear_issue_id: "{created_via_taskmaster_to_linear}"
+    test_coverage: "{percentage_or_status}"
+    last_updated: "{timestamp}"
+    
+  status_transitions:
+    pending_to_in_progress:
+      - verify_dependencies_complete()
+      - create_linear_issue_if_complexity_4_plus()
+      - log_start_timestamp()
+      - document_initial_approach()
+    
+    in_progress_to_review:
+      - ensure_tests_passing()
+      - update_linear_with_pr_link()
+      - document_implementation_summary()
+      - request_code_review()
+    
+    review_to_done:
+      - verify_review_approved()
+      - merge_changes()
+      - close_linear_issue()
+      - update_completion_timestamp()
+    
+    any_to_blocked:
+      - document_blocker_reason()
+      - create_linear_blocker_issue()
+      - identify_workaround_tasks()
+      - notify_relevant_parties()
+```
+
+## Success Criteria
+
+✅ **Complete Implementation** - All assigned tasks/subtasks fully implemented
+✅ **Production Quality** - Code is robust, tested, and well-structured
+✅ **Comprehensive Documentation** - Implementation journey logged in subtasks
+✅ **Status Accuracy** - Taskmaster and Linear reflect true progress
+✅ **Knowledge Transfer** - Future developers can understand decisions
+✅ **Test Coverage** - Appropriate tests for task complexity
+✅ **Clean Handoff** - Next developer can easily continue work
+
+Remember: As a task executor, your role is deep implementation excellence within your assigned scope. Focus on thorough execution, detailed progress logging, and production-quality code. Use auto-discovery to understand context without manual setup, and always prioritize MCP tools with CLI fallback when needed.
