@@ -1,0 +1,56 @@
+# Environment
+.env
+.env.local
+.env.*.local
+
+# MCP config (contains API keys)
+mcp.json
+~/.claude/mcp.json
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Editor files
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# Taskmaster runtime
+.taskmaster/state.json
+.taskmaster/reports/*.json
+.taskmaster/tasks/*.md
+
+# Node modules (if you add any later)
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Logs
+logs/
+*.log
+
+# Build outputs
+dist/
+build/
+out/
+
+# Temporary files
+*.tmp
+*.temp
+.cache/
+
+# Backup files
+*.backup
+*.bak
+
+# Basic Memory (if using)
+.basic-memory/
+
+# Private notes
+private/
+notes/
+TODO.md 

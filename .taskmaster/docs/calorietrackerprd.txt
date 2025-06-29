@@ -1,0 +1,114 @@
+# Caloric Deficit Calculator – Product Requirements Document (PRD)
+
+## 1. Overview & Tech Stack
+*   **Overview:** The Caloric Deficit Calculator is a single-page web app designed to help users establish safe, evidence-based daily calorie and macronutrient targets for fat loss. By combining trusted metabolic equations with a clear, intuitive user interface, the tool eliminates guesswork and provides a comprehensive 12-week weight-loss roadmap. Users can export their plan or return for weekly check-ins to maintain accuracy and motivation.
+*   **Tech Stack:**
+    *   **Framework:** Next.js (React 18+, TypeScript 5+)
+    *   **Styling:** Tailwind CSS or CSS Modules for component-based styling.
+    *   **State Management:** React Context or a lightweight library like Zustand.
+    *   **Calculations:** Serverless Functions (e.g., Vercel Functions, AWS Lambda) for metabolic calculations to keep business logic separate.
+    *   **Data Persistence:** A simple, token-based system using a key-value store or a small database (e.g., Redis, Vercel KV, or a serverless Postgres option) for anonymous plan retrieval.
+    *   **Deployment:** Vercel / Netlify with CDN for fast global delivery.
+
+## 2. Problem Statement & Success Metrics
+*   **Problem:** Most people misjudge their energy needs, leading to stalled progress or unsafe weight-loss attempts. The process is often confusing, and tools are either too simple to be accurate or too complex for the average user.
+*   **Success Metrics (90 days post-launch):**
+    *   **Engagement:** 70% completion rate from the first input to the results view.
+    *   **Retention:** 35% of users return for at least one weekly check-in.
+    *   **Satisfaction:** Average in-app accuracy rating of 4.5 / 5.
+
+## 3. User Experience
+*   **User Personas:**
+    *   **Busy Professional "Alex, 34"**: Has limited time, wants quick and clear guidance, and maintains a moderate gym habit.
+    *   **Gym Newbie "Jamie, 26"**: Is learning about calorie and macro tracking for the first time, needs clear instructions, and benefits from weekly reminders.
+*   **User Stories:**
+    1.  **As Alex**, I want to enter my body stats in less than one minute so that I can get my calorie targets during a work break.
+    2.  **As Jamie**, I want clear protein, carb, and fat numbers so that grocery shopping is simple and I know what to eat.
+    3.  **As any user**, I want to choose a safe rate of weight loss so that I can avoid unhealthy crash diets.
+    4.  **As any user**, I want an export button so that I can easily share my plan with my personal trainer or keep a local copy.
+    5.  **As any user**, I want to update my weight weekly so that my plan adapts and stays accurate over time.
+    6.  **As Alex**, I want to see a chart of my projected weight change so that I can stay motivated and visualize my progress.
+*   **User Flows:**
+    *   **Onboarding Flow:** Landing Page → User Stats Form (age, sex, height, weight, activity) → Goal Selection (rate of loss) → Results Dashboard (calories, macros, chart) → Optional Save/Export.
+    *   **Weekly Check-in Flow:** Return via a unique link → Enter new weight → Dashboard updates chart and recalculates numbers.
+
+## 4. Core Features & Functional Requirements
+*   **Input Fields:**
+    *   Age (integer, 13-80)
+    *   Biological sex (male, female)
+    *   Height (cm or ft/in with a toggle)
+    *   Current weight (kg or lbs with a toggle)
+    *   Body-fat percent (optional integer input)
+    *   Activity level (dropdown: sedentary, light, moderate, high, athlete)
+    *   Target rate of loss (slider or dropdown, 0.25–1.0 % of body weight per week)
+*   **Calculation Logic (to be handled by a serverless function):**
+    *   **BMR Calculation:**
+        *   Use Mifflin-St Jeor equation when body-fat is not provided.
+        *   Use Katch-McArdle equation when body-fat is provided.
+    *   **TDEE Calculation:** TDEE = BMR × activity multiplier (based on a standard table, e.g., 1.2 for sedentary, 1.9 for athlete).
+    *   **Caloric Deficit:** Deficit Target = TDEE × chosen deficit percentage (e.g., 15–25%).
+    *   **Macronutrient Split:**
+        *   Protein: 1.8g per kg of lean mass (if body fat is known) or 2.2g per kg of body weight (if unknown).
+        *   Remaining calories split: 40% carbohydrates, 60% fats.
+    *   **Weight Projection:** Generate a 12-week projected weight loss series based on the selected rate of loss.
+*   **Outputs / Results Dashboard:**
+    *   Display daily target calories and grams of protein, carbohydrates, and fat.
+    *   A line chart visualizing the projected weight loss over 12 weeks.
+    *   A CSV export button for the full 12-week schedule.
+    *   A "Save My Plan" button that generates a unique, shareable link for later retrieval.
+
+## 5. Edge Cases and Error States
+*   Height, weight, or body-fat percentage outside of accepted physiological ranges.
+*   Caloric deficit selection resulting in a target below a safe minimum (e.g., 1200 kcal).
+*   User enters conflicting units (e.g., toggles partway through).
+*   Network failure during calculation, save, or export.
+
+## 6. Non-Functional Requirements
+- **Performance:** First contentful paint under 1 second on a standard broadband connection.
+- **Accessibility:** WCAG 2.2 AA compliance, including keyboard navigation and proper screen-reader labels for all interactive elements.
+- **Privacy:** Store only anonymous plan data linked to a non-guessable token. Provide a mechanism to comply with GDPR data deletion requests within 30 days.
+- **Scalability:** The architecture should horizontally scale to support 10,000 monthly active users on a single-node database with a CDN cache.
+
+## 7. Acceptance Criteria
+*   **Given** a user provides valid inputs, **when** they submit the form, **then** the results dashboard displays within two seconds.
+*   **Given** a user is missing a required field, **when** they click "Calculate," **then** a clear, inline error message appears next to the relevant field.
+*   **Given** a user clicks the export button, **when** the data generation succeeds, **then** a CSV file containing the 12-week plan downloads to their device.
+*   **Given** a user saves a plan and receives a token, **when** they return using the unique link, **then** their previous plan data is loaded and displayed correctly.
+*   **Given** a user provides their body-fat percentage, **when** the plan is generated, **then** a unit test verifies that the Katch-McArdle equation was used in the calculation.
+
+## 8. Out-of-Scope for v1
+*   Native mobile application (iOS/Android).
+*   Meal plan suggestions or a recipe database.
+*   Integration with third-party fitness wearables (e.g., Fitbit, Apple Watch).
+*   User accounts or social sharing features.
+
+## 9. Future Enhancements
+*   Add presets for macronutrient cycling (e.g., high-carb days for training).
+*   Integrate email reminders for weekly check-ins.
+*   Offer a branded PDF export option.
+
+## 10. Open Questions and Assumptions
+*   **Assumption:** A token-based anonymous system is sufficient for v1, deferring user accounts.
+*   **Question:** Are imperial units a mandatory requirement for the initial release, or can they be added later? (Assuming yes for now).
+*   **Assumption:** Serverless functions on Vercel are the permitted and preferred method for backend logic.
+
+## 11. Cursor AI Rules/Configuration
+```json
+{
+  "rules": {
+    "project_structure": [
+      "Place all React components under src/components, organized by feature.",
+      "Next.js API routes (serverless functions) must be located in src/app/api/.",
+      "Shared logic and hooks should be placed in src/lib and src/hooks respectively.",
+      "Use TypeScript for all new components and logic to ensure type safety."
+    ],
+    "coding_guidelines": [
+      "Use functional components with React Hooks.",
+      "For styling, prefer CSS Modules or Tailwind CSS for encapsulated styles.",
+      "All business logic for calculations must be in a dedicated serverless function, not on the client.",
+      "Use a centralized state management solution (like Zustand or React Context) for form state."
+    ]
+  }
+}
+```
+

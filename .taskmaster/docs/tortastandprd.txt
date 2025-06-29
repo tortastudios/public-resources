@@ -1,0 +1,168 @@
+Torta Stand – Unified Product Requirements Document (PRD)
+
+## Overview & Tech Stack
+Torta Stand is a browser-based strategy game where players run a Mexican sandwich stand, making daily decisions on ingredients, recipes, pricing, and responding to random events. Built with Phaser 3 (latest best practices) and integrated into a Next.js (React, TypeScript) front-end. The goal: fun, performance (60 FPS with 100+ sprites), and modular, maintainable code.
+
+**Core Technologies:**
+- Next.js (React 18+, TypeScript 5+): App framework, UI, overlays
+- Phaser 3.86+: Game engine, scenes, sprites, game loop
+- PNG sprite sheets for all art assets
+- EventBus (type-safe event emitter) for React↔Phaser communication
+- Object pooling, profiling, and mobile/desktop support
+
+## Project Structure
+```
+TortaStand/
+├── src/
+│   ├── pages/           # Next.js entry points
+│   ├── components/      # React UI components (PhaserGame.tsx, GameUI, etc.)
+│   ├── game/            # Phaser code (main.ts, EventBus.ts, scenes/)
+│   │   ├── scenes/      # BootScene, PlanningScene, SimulationScene, etc.
+│   │   ├── systems/     # EventBus, GameManager
+│   │   └── utils/       # Helpers
+│   ├── hooks/           # Custom React hooks (e.g., usePhaserEvent)
+│   ├── store/           # (Optional) Zustand/Redux
+│   └── styles/          # CSS
+├── public/
+│   └── assets/          # sprites/, audio/, fonts/
+├── package.json, tsconfig.json, etc.
+└── README.md
+```
+
+## Architectural Rationale & Best Practices
+- **Separation:** All Phaser logic in `src/game`, React UI in `src/components`/`src/pages`.
+- **Integration:** Use a dedicated `PhaserGame.tsx` React component to initialize Phaser only on the client (SSR-safe).
+- **Communication:** Use a singleton EventBus (type-safe EventEmitter) for all React↔Phaser events. Example:
+```ts
+// EventBus.ts
+import { EventEmitter } from 'events';
+export const EventBus = new EventEmitter();
+```
+- **Scene Management:** Each scene is a class in `src/game/scenes`, e.g.:
+```ts
+// BootScene.ts
+export class BootScene extends Phaser.Scene { /* ... */ }
+```
+- **Performance:** Object pooling for customers/particles, efficient update loops, minimal React re-renders, FPS counter, and profiling tools.
+- **Asset Loading:** All assets loaded in BootScene's preload(). Example:
+```ts
+this.load.spritesheet('customers', 'assets/sprites/customers.png', { frameWidth: 32, frameHeight: 32 });
+```
+- **Mobile Support:** Responsive CSS, Phaser ScaleManager, touch events.
+
+## Taskmaster-Optimized Task List
+
+1. **Project Setup and Configuration**
+   - Initialize Next.js project, configure TypeScript, install Phaser, set up modular directory structure.
+   - Subtasks: Create app, install Phaser, set up folders, configure tsconfig, add sample asset.
+   - Test: App runs, Phaser loads, TypeScript works.
+
+2. **Phaser-Next.js Integration**
+   - Integrate Phaser canvas into React via `PhaserGame.tsx`.
+   - Subtasks: Create component, SSR-safe init, render dummy scene, cleanup on unmount.
+   - Test: React page renders Phaser canvas, no SSR errors.
+
+3. **Directory Structure and File Organization**
+   - Organize code for maintainability and scalability.
+   - Subtasks: Create scenes/systems/utils, set up UI overlays, document structure.
+   - Test: All files in correct locations, imports resolve.
+
+4. **EventBus Implementation and Testing**
+   - Implement singleton EventBus for React↔Phaser using type-safe EventEmitter.
+   - Subtasks: Create EventBus, add custom React hook (e.g., `usePhaserEvent`), test events, document usage.
+   - Test: Events trigger correctly between React and Phaser.
+
+5. **BootScene and Asset Loading System**
+   - Implement BootScene to preload all assets, show loading bar.
+   - Subtasks: Create BootScene, load all assets, implement progress bar, handle errors, transition to PlanningScene.
+   - Test: All assets load, loading bar displays, errors handled.
+
+6. **PlanningScene and React UI Integration**
+   - Overlay React UI for planning phase, communicate via EventBus.
+   - Subtasks: Create PlanningScene, build React UI overlay, use EventBus for PLANNING_START, validate/persist data.
+   - Test: UI overlays correctly, data flows to Phaser.
+
+7. **Start Day Transition**
+   - Implement transition from planning to simulation phase.
+   - Subtasks: React emits START_DAY, Phaser switches scenes, animate transition.
+   - Test: Transition is smooth, no data loss.
+
+8. **SimulationScene: Customer System and Object Pooling**
+   - Simulate customer arrivals, purchases, feedback using object pooling.
+   - Subtasks: Implement SimulationScene, create Customer class/pool, spawn/move/recycle sprites, handle logic, optimize update loop.
+   - Test: 100+ customers, no dropped frames.
+
+9. **End-of-Day UI and Loop System**
+   - Show end-of-day summary, handle random events, loop to next day.
+   - Subtasks: Display summary UI, calculate profits, trigger events, emit NEXT_DAY.
+   - Test: Summary displays, stats update, loop restarts.
+
+10. **Tutorial and Game Balancing**
+    - Onboard new players, balance difficulty.
+    - Subtasks: Implement TutorialScene or overlay, highlight UI, adjust difficulty/events.
+    - Test: Tutorial clear, game is balanced.
+
+11. **Audio System and Feedback Polish**
+    - Add music, SFX, polish feedback using Phaser audio/FX APIs.
+    - Subtasks: Load/play audio, integrate spatial sound, add visual feedback, implement accessibility.
+    - Test: Audio/FX enhance experience, accessible.
+
+12. **Mobile/Touch Support and Responsive Design**
+    - Ensure game is fully playable on mobile.
+    - Subtasks: Responsive CSS/Phaser config, handle touch, optimize UI, test devices.
+    - Test: Game works on phones/tablets, all controls accessible.
+
+13. **Performance Profiling and Optimization**
+    - Profile/optimize for 60 FPS using Phaser's APIs.
+    - Subtasks: Add FPS counter, profile loops/assets, optimize pooling/rendering/events, test with 100+ sprites.
+    - Test: 60 FPS on all target devices.
+
+14. **Final Playtesting and Tweaks**
+    - Systematic playtesting, bug fixing, polish.
+    - Subtasks: Create test plan, play through campaign, fix bugs, adjust balance/polish UI.
+    - Test: All features tested, bugs resolved, feedback incorporated.
+
+15. **Documentation and Deployment Preparation**
+    - Document codebase, prepare for deployment.
+    - Subtasks: Write README/API docs, document asset/build process, set up deployment, add error tracking/analytics.
+    - Test: Docs clear, deployment succeeds, errors tracked.
+
+## Cursor AI Rules/Configuration
+```
+{
+  "rules": {
+    "project_structure": [
+      "Place all Phaser game logic under src/game (separated from React UI components).",
+      "Each Phaser Scene is a separate class file in src/game/scenes, extending Phaser.Scene.",
+      "React components (Next.js pages, UI overlays) live in src/pages or src/components as appropriate.",
+      "Static assets (images, audio) are stored in public/assets and loaded via Phaser preload."
+    ],
+    "coding_guidelines": [
+      "Use TypeScript types for Phaser (e.g., strongly type scene objects and event payloads).",
+      "Follow Next.js conventions for file naming and component structure (e.g., use functional components).",
+      "Use an EventBus for React-Phaser state synchronization instead of coupling through global variables.",
+      "Ensure code is modular: e.g., utilities in src/utils, custom hooks in src/hooks, config constants in a separate file."
+    ],
+    "phaser_best_practices": [
+      "Load all necessary assets in scene preload() methods before using them.",
+      "Use object pooling for frequently created GameObjects (customers, particles) to reduce GC overhead.",
+      "Keep the scene update loops efficient – avoid heavy computations per frame; use built-in Phaser timing when possible.",
+      "Use Phaser events or the EventBus to handle asynchronous game events (timers, random events) rather than busy-waiting."
+    ]
+  }
+}
+```
+
+## Success Criteria
+- Smooth gameplay at 60 FPS on desktop and mobile (profiled and verified)
+- Clear separation of game logic (Phaser) and UI (React)
+- All core features and scenes implemented as modular, testable units
+- Playable 30-day campaign with random events and feedback
+- Well-documented code and project structure, following Phaser and React best practices
+
+## References
+- Phaser 3 Official Docs: https://phaser.io/docs
+- Phaser + Next.js Template: https://github.com/phaserjs/template-nextjs
+- Performance/Pooling: https://www.thepolyglotdeveloper.com/2020/09/object-pooling-sprites-phaser-game-performance-gains/
+- Taskmaster Task Structure: id, title, description, status, dependencies, priority, details, testStrategy, subtasks
+- See full architectural rationale and code patterns above for more details. 
