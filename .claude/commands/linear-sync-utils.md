@@ -1885,22 +1885,22 @@ interface BulkValidationResult {
 ```typescript
 function getCurrentProjectRoot(): string {
   // This would be provided by the session context
-  return "/Users/cthor/Dev/bakery";
+  return "/path/to/project";
 }
 
 function getCurrentLinearProjectId(): string {
   // This would be determined based on current tag/project
-  return "cb4a5071-aff7-499f-92cf-9ffcde81466d"; // Example: Torta Stand
+  return "project-uuid-placeholder-456789123"; // Example: Project ID
 }
 
 function getCurrentLinearTeamId(): string {
   // This would be from Linear MCP configuration
-  return "da92f0fd-0f5a-4baf-b703-8ce303c17d58"; // Example: Tortastudios
+  return "team-uuid-placeholder-987654321"; // Example: Team ID
 }
 
 function getCurrentUserId(): string {
   // This would be from user context
-  return "2a63cf86-c34f-48cb-ab2d-7ca2a7e58f3f"; // Example: Colin Thornton
+  return "user-uuid-placeholder-123456789"; // Example: User ID
 }
 ```
 
@@ -1910,9 +1910,9 @@ function getCurrentUserId(): string {
 ```typescript
 // Initialize session memory at start of any sync operation
 initializeSessionMemory(
-  "cb4a5071-aff7-499f-92cf-9ffcde81466d", // projectId
-  "da92f0fd-0f5a-4baf-b703-8ce303c17d58", // teamId  
-  "2a63cf86-c34f-48cb-ab2d-7ca2a7e58f3f"  // assigneeId
+  "project-uuid-placeholder-456789123", // projectId
+  "team-uuid-placeholder-987654321", // teamId  
+  "user-uuid-placeholder-123456789"  // assigneeId
 );
 ```
 

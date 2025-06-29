@@ -205,7 +205,7 @@ async function performLinearSync(
   // Phase 2: Get all tasks
   const tasks = await mcp__task_master_ai__get_tasks({ 
     withSubtasks: true,
-    projectRoot: "/Users/cthor/Dev/bakery"
+    projectRoot: "/path/to/project"
   });
   
   // Phase 3: Filter syncable tasks
@@ -253,7 +253,7 @@ async function performLinearSync(
   
   // Phase 7: Validation report
   if (options.includeValidation) {
-    const validation = await validateMetadata("/Users/cthor/Dev/bakery");
+    const validation = await validateMetadata("/path/to/project");
     console.log(`
 📊 Validation Results:
 - Tasks Valid: ${validation.tasksValid}
@@ -437,7 +437,7 @@ This metadata enables reliable bidirectional sync between Taskmaster and Linear.
   
   await updateFunction({
     id: taskId,
-    projectRoot: "/Users/cthor/Dev/bakery",
+    projectRoot: "/path/to/project",
     prompt: `METADATA SYNC - Add Linear sync information:${metadataSection}`
   });
   
@@ -448,8 +448,8 @@ This metadata enables reliable bidirectional sync between Taskmaster and Linear.
 async function validateLinearMetadata(taskId: string, isSubtask = false) {
   try {
     const getFunction = isSubtask ? 
-      () => mcp__task_master_ai__get_task({ id: taskId.split('.')[0], projectRoot: "/Users/cthor/Dev/bakery" }) :
-      () => mcp__task_master_ai__get_task({ id: taskId, projectRoot: "/Users/cthor/Dev/bakery" });
+      () => mcp__task_master_ai__get_task({ id: taskId.split('.')[0], projectRoot: "/path/to/project" }) :
+      () => mcp__task_master_ai__get_task({ id: taskId, projectRoot: "/path/to/project" });
     
     const task = await getFunction();
     const details = isSubtask ? 
@@ -485,7 +485,7 @@ async function clearStaleMetadata(taskId: string, isSubtask = false) {
   
   await updateFunction({
     id: taskId,
-    projectRoot: "/Users/cthor/Dev/bakery",
+    projectRoot: "/path/to/project",
     prompt: `METADATA CLEANUP - Remove stale Linear sync metadata. Clear any existing Linear metadata sections and mark sync status as 'needs_sync' for re-creation.`
   });
   
@@ -504,7 +504,7 @@ async function syncTaskToLinear(taskId: string, projectId: string, assigneeId: s
     // Get current task
     const task = await mcp__task_master_ai__get_task({ 
       id: taskId, 
-      projectRoot: "/Users/cthor/Dev/bakery" 
+      projectRoot: "/path/to/project" 
     });
     
     // Use enhanced duplicate-aware function
@@ -567,7 +567,7 @@ async function syncSubtaskToLinear(parentTaskId: string, subtaskId: string, proj
     // Get parent task and subtask
     const task = await mcp__task_master_ai__get_task({ 
       id: parentTaskId, 
-      projectRoot: "/Users/cthor/Dev/bakery" 
+      projectRoot: "/path/to/project" 
     });
     
     const subtask = task.data.subtasks?.find(st => st.id === parseInt(subtaskId));
@@ -802,7 +802,7 @@ async function ensureLinearIssueExists(taskId: string, taskData: any, projectId:
 async function validateAllMetadata() {
   const tasks = await mcp__task_master_ai__get_tasks({ 
     withSubtasks: true,
-    projectRoot: "/Users/cthor/Dev/bakery"
+    projectRoot: "/path/to/project"
   });
   
   const results = {
@@ -851,7 +851,7 @@ async function validateAllMetadata() {
 async function bulkSyncAllTasks(projectId: string, assigneeId: string) {
   const tasks = await mcp__task_master_ai__get_tasks({ 
     withSubtasks: true,
-    projectRoot: "/Users/cthor/Dev/bakery"
+    projectRoot: "/path/to/project"
   });
   
   const results = {
@@ -950,7 +950,7 @@ const issue = await mcp__linear__create_issue({...}); // Always created new
 // STEP 1: Check metadata - None exists yet
 // STEP 2: Search Linear for "Phaser-Next.js Integration Component"
 const existingIssues = await mcp__linear__list_issues({
-  projectId: "cb4a5071-aff7-499f-92cf-9ffcde81466d",
+  projectId: "project-uuid-placeholder-456789123",
   query: "Phaser-Next.js Integration Component"
 });
 
@@ -963,8 +963,8 @@ const exactMatch = existingIssues.find(issue =>
 console.log("✅ AUTO-LINKING: High confidence match (100%) - linking to existing issue");
 await storeLinearMetadata("3", {
   number: "TOR-107",
-  id: "7d2adab1-ff07-40fc-8c8a-7aef025ed02a",
-  projectId: "cb4a5071-aff7-499f-92cf-9ffcde81466d"
+  id: "issue-uuid-placeholder-111222333",
+  projectId: "project-uuid-placeholder-456789123"
 });
 
 // RESULT: Task 3 linked to TOR-107, no duplicate created ✅
@@ -1006,7 +1006,7 @@ const syncLog = {
   bestMatch: { issueNumber: "TOR-107", confidence: 100, type: "exact" },
   userChoice: "auto_linked", 
   action: "linked_existing",
-  linearIssueId: "7d2adab1-ff07-40fc-8c8a-7aef025ed02a",
+  linearIssueId: "issue-uuid-placeholder-111222333",
   timestamp: "2025-06-26T19:25:49.054Z"
 };
 ```

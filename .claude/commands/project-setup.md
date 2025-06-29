@@ -85,7 +85,7 @@ Low Complexity (1-4 score): 6 tasks
    - mcp__context7__resolve-library-id() for each technology
    - mcp__context7__get-library-docs() for implementation patterns
 ✅ Created 15 Linear issues with 89 sub-issues
-✅ All issues assigned to Colin Thornton
+✅ All issues assigned to Project Owner
 ✅ Linear metadata stored in Taskmaster:
    - Task 1 → Linear: TOR-150 (id: abc123-def456-ghi789)
    - Task 2 → Linear: TOR-151 (id: def456-ghi789-jkl012)
@@ -133,7 +133,7 @@ Claude: Executing Smart Merge cleanup...
    - mcp__context7__get-library-docs() → latest documentation fetched
    - Updated tasks with current best practices and patterns
 ✅ Created 20 missing Linear sub-issues (14 new + 6 from original gap)
-✅ All issues assigned to Colin Thornton
+✅ All issues assigned to Project Owner
 ✅ Linear metadata updated in Taskmaster:
    - Task 3 → Linear: TOR-152 (id: ghi789-jkl012-mno345)
    - Subtask 3.1 → Linear: TOR-153 (id: jkl012-mno345-pqr678, parent: TOR-152)
@@ -394,7 +394,7 @@ async function integrateWithLinear(
   console.log(`\n✅ Sub-issues created: ${totalSubIssuesCreated} (${totalSubIssuesRecovered} recovered)`);
   
   // Phase 3: Validate all metadata
-  const validation = await validateMetadata("/Users/cthor/Dev/bakery");
+  const validation = await validateMetadata("/path/to/project");
   const accuracy = validation.totalValidated > 0 ? 
     (((validation.tasksValid + validation.subtasksValid) / validation.totalValidated) * 100).toFixed(1) : '100';
   
@@ -494,7 +494,7 @@ Preserve all existing research and implementation notes.`;
         
         await mcp__task_master_ai__update_task({
           id: task.id.toString(),
-          projectRoot: "/Users/cthor/Dev/bakery",
+          projectRoot: "/path/to/project",
           prompt: enhancementPrompt
         });
       }

@@ -71,7 +71,7 @@ Claude: 📊 Mapping Validation Results
 ✅ All 21 existing sub-issues correctly assigned to "Torta Stand" project
 
 **Ownership Status:**
-✅ All 26 issues/sub-issues assigned to Colin Thornton
+✅ All 26 issues/sub-issues assigned to Project Owner
 
 **RECOMMENDATIONS:**
 1. **HIGH PRIORITY**: Clear 3 orphaned metadata references
@@ -120,13 +120,13 @@ Claude: 📊 Mapping Validation Results
 **Project:** Torta Stand
 **Tag:** tortastand  
 **Validation Date:** 2024-06-24 14:30 UTC
-**Validator:** Colin Thornton
+**Validator:** Project Owner
 
 ### Summary
 - **Metadata Accuracy:** 88% (23/26 stored IDs valid)
 - **Mapping Completeness:** 91% (47/52 items mapped)
 - **Project Inheritance:** 100% (all sub-issues correctly assigned)
-- **Ownership Consistency:** 100% (all items assigned to Colin Thornton)
+- **Ownership Consistency:** 100% (all items assigned to Project Owner)
 
 ### Detailed Findings
 
