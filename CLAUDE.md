@@ -1,50 +1,16 @@
 # CLAUDE.md
 
-This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
+This file provides guidance to Claude Code (claude.ai/code) when working with Taskmaster-based projects using this workflow template.
 
-## Build/Lint/Test Commands
+## Overview
 
-### Web (Next.js)
-- `cd apps/web/admin && npm run dev` - Start development server
-- `cd apps/web/admin && npm run build` - Build for production
-- `cd apps/web/admin && npm run lint` - Run ESLint
+This document outlines a comprehensive project management workflow that integrates:
+- **Taskmaster** - Task management and organization system
+- **Linear** - Team visibility and notification layer
+- **Context7** - Documentation enhancement
+- **Perplexity** - Research-backed task expansion
 
-### iOS (Swift)
-- Run tests in Xcode via Test Navigator or cmd+U
-- `swiftformat .` - Format Swift code
-- `swiftlint` - Lint Swift code
-
-## Code Style Guidelines
-
-### General
-- Follow trunk-based development workflow
-- Make small, atomic commits
-- Pull frequently from main
-
-### Swift
-- Use SwiftUI for new UI components
-- Follow MVVM architecture for feature modules
-- Group related files in feature directories
-- Use managers for shared functionality
-- Follow Apple's Swift API Design Guidelines
-
-### TypeScript/React
-- Use TypeScript for type safety
-- Follow Next.js conventions for routing
-- Use React hooks for stateful logic
-- Use CSS modules for component styling
-- Follow tRPC patterns for API endpoints
-
-### Error Handling
-- Use structured error handling
-- Log errors with appropriate context
-- Implement Sentry for error tracking
-
-### Naming Conventions
-- Use descriptive, meaningful names
-- PascalCase for components/types
-- camelCase for variables/functions
-- snake_case for cursor rule files
+The workflow is designed for trunk-based development with intelligent task execution and automated testing capabilities.
 
 ## 🚨 CRITICAL: TASKMASTER-CENTRIC WORKFLOW
 
@@ -60,7 +26,7 @@ Taskmaster is the single source of truth for all task management. Linear serves 
 
 ```typescript
 // REQUIRED PATTERN for all task status changes
-1. mcp__task_master_ai__set_task_status(taskId, status) // Update Taskmaster first
+1. mcp_task-master-ai_set_task_status(taskId, status) // Update Taskmaster first
 2. syncTaskStatusToLinear(taskId, status)               // Sync to Linear immediately
 3. // Slack notification automatically triggered by Linear update
 ```
@@ -69,29 +35,29 @@ Taskmaster is the single source of truth for all task management. Linear serves 
 
 **Starting a Task:**
 ```
-1. mcp__task_master_ai__next_task() → Get next task ID
-2. mcp__task_master_ai__set_task_status(taskId, "in-progress") → Update Taskmaster
+1. mcp_task-master-ai_next_task() → Get next task ID
+2. mcp_task-master-ai_set_task_status(taskId, "in-progress") → Update Taskmaster
 3. syncTaskStatusToLinear(taskId, "In Progress") → Trigger Slack notification
 4. Begin development work
 ```
 
 **During Task Execution:**
 ```
-1. mcp__task_master_ai__update_subtask(subtaskId, progress) → Update Taskmaster
+1. mcp_task-master-ai_update_subtask(subtaskId, progress) → Update Taskmaster
 2. syncSubtaskProgressToLinear(subtaskId, progress) → Add Linear comment
 3. // Progress visible in Linear and Slack
 ```
 
 **Completing a Task:**
 ```
-1. mcp__task_master_ai__set_task_status(taskId, "done") → Update Taskmaster
+1. mcp_task-master-ai_set_task_status(taskId, "done") → Update Taskmaster
 2. syncTaskStatusToLinear(taskId, "Done") → Trigger Slack notification
-3. mcp__task_master_ai__next_task() → Get next task (optional)
+3. mcp_task-master-ai_next_task() → Get next task (optional)
 ```
 
-### **Linear Sync Functions (Implementation)**
+### **Linear Sync Functions (Implementation Required)**
 
-These functions support the Taskmaster workflow:
+These functions need to be implemented in your project:
 
 - **syncTaskStatusToLinear(taskId, status)** - Single task status update
 - **syncSubtaskProgressToLinear(subtaskId, progress)** - Add progress comment to sub-issue
@@ -168,7 +134,7 @@ Users can control testing behavior:
 Screenshots are automatically organized using Playwright configuration:
 
 ```typescript
-// playwright.config.ts (configured)
+// playwright.config.ts (configure in your project)
 export default defineConfig({
   outputDir: './tests/taskmaster-screenshots'
 });
@@ -215,9 +181,9 @@ Use Taskmaster's native research capabilities for strategic guidance:
 
 ```typescript
 // Always use research option for task expansion
-mcp__task-master-ai__expand_all({
+mcp_task-master-ai_expand_all({
   research: true,  // ← Enables Perplexity research
-  projectRoot: "/Users/cthor/Dev/bakery"
+  projectRoot: "/path/to/your/project"
 })
 ```
 
@@ -234,7 +200,7 @@ Add official documentation and code examples:
 
 ```typescript
 // After Perplexity expansion, enhance with official docs using Context7 MCP
-/project:enhance-docs  // Uses mcp__context7__resolve-library-id() and mcp__context7__get-library-docs()
+/project:enhance-docs  // Uses mcp_context7_resolve-library-id() and mcp_context7_get-library-docs()
 ```
 
 **Context7 provides:**
@@ -262,8 +228,8 @@ Task 1.1: Implement user authentication
 [Previous Perplexity content...]
 
 Context7 Documentation (via MCP tools):
-- mcp__context7__resolve-library-id("NextAuth.js") → /nextauthjs/next-auth
-- mcp__context7__get-library-docs("/nextauthjs/next-auth", {topic: "JWT"})
+- mcp_context7_resolve-library-id("NextAuth.js") → /nextauthjs/next-auth
+- mcp_context7_get-library-docs("/nextauthjs/next-auth", {topic: "JWT"})
 - NextAuth.js v4.24 JWT configuration:
   [Code example with exact API usage]
 - bcrypt.js hashing implementation:
@@ -298,7 +264,7 @@ Every `/project:` command MUST pause at these mandatory gates and CANNOT proceed
 **Purpose:** Verify Linear connectivity before any operations  
 **REQUIRED TOOL SEQUENCE:**
 ```
-1. Test Linear MCP connectivity: mcp__linear__list_projects() (MANDATORY)
+1. Test Linear MCP connectivity: mcp_linear_list_projects() (MANDATORY)
 2. Verify response validity and tool availability
 3. If tools fail, ABORT with clear error message
 4. Log successful validation before proceeding
@@ -322,7 +288,7 @@ Every `/project:` command MUST pause at these mandatory gates and CANNOT proceed
 **Purpose:** Establish Taskmaster context  
 **REQUIRED TOOL SEQUENCE:**
 ```
-1. mcp__task-master-ai__list_tags (MANDATORY)
+1. mcp_task-master-ai_list_tags (MANDATORY)
 2. Present findings to user
 3. Get explicit confirmation before proceeding
 ```
@@ -341,7 +307,7 @@ Every `/project:` command MUST pause at these mandatory gates and CANNOT proceed
 **Purpose:** Identify target Linear project  
 **REQUIRED TOOL SEQUENCE:**
 ```
-1. mcp__linear__list_projects (MANDATORY)
+1. mcp_linear_list_projects (MANDATORY)
 2. Show available projects with name matching
 3. Present recommendation with alternatives
 4. Get explicit project selection
@@ -361,7 +327,7 @@ Every `/project:` command MUST pause at these mandatory gates and CANNOT proceed
 **Purpose:** Scan Linear project for existing issues, choose cleanup approach  
 **REQUIRED TOOL SEQUENCE:**
 ```
-1. mcp__linear__list_issues(projectId, limit=250) (MANDATORY)
+1. mcp_linear_list_issues(projectId, limit=250) (MANDATORY)
 2. Analyze issues for similarity to Taskmaster tasks  
 3. Score issues by quality (Context7, recency, sub-issues, description)
 4. Present duplicate findings with cleanup strategy recommendations
@@ -394,7 +360,7 @@ Every `/project:` command MUST pause at these mandatory gates and CANNOT proceed
 **Purpose:** Analyze complete Taskmaster scope before Linear creation  
 **REQUIRED TOOL SEQUENCE:**
 ```
-1. mcp__task-master-ai__get_tasks with withSubtasks: true (MANDATORY)
+1. mcp_task-master-ai_get_tasks with withSubtasks: true (MANDATORY)
 2. Count tasks and subtasks
 3. Calculate Linear scope (tasks→issues + subtasks→sub-issues)
 4. Present complete scope plan
@@ -435,7 +401,7 @@ Every `/project:` command MUST pause at these mandatory gates and CANNOT proceed
 **REQUIRED TOOL SEQUENCE:**
 ```
 1. After creating any sub-issues, IMMEDIATELY validate inheritance
-2. mcp__linear__list_issues(projectId, limit=50) (MANDATORY)
+2. mcp_linear_list_issues(projectId, limit=50) (MANDATORY)
 3. Check ALL newly created sub-issues have correct project assignment
 4. If inheritance failed, execute INHERITANCE FAILURE PROTOCOL
 5. Log validation results for audit trail
@@ -450,7 +416,7 @@ Every `/project:` command MUST pause at these mandatory gates and CANNOT proceed
 **Failures Detected:** [Y] sub-issues missing project assignment
 
 **INHERITANCE FAILURE PROTOCOL:** [if failures detected]
-- Immediately update missing assignments using mcp__linear__update_issue
+- Immediately update missing assignments using mcp_linear_update_issue
 - Re-validate until all sub-issues inherit project correctly
 - Log all corrections for audit trail
 ```
@@ -471,10 +437,10 @@ Before executing ANY `/project:` command, verify this checklist is COMPLETE:
 
 **PRE-EXECUTION GATES:**
 - [ ] **Gate 1 - Linear MCP Validation**: Verify Linear MCP tools respond correctly before operations
-- [ ] **Gate 2 - Tag Selection**: `mcp__task-master-ai__list_tags` executed and user confirmed tag choice
-- [ ] **Gate 3 - Linear Project Selection**: `mcp__linear__list_projects` executed and user confirmed project choice
-- [ ] **Gate 4 - Duplicate Detection**: `mcp__linear__list_issues` executed, duplicates analyzed, cleanup strategy selected
-- [ ] **Gate 5 - Scope Planning**: `mcp__task-master-ai__get_tasks` with `withSubtasks: true` executed and scope confirmed
+- [ ] **Gate 2 - Tag Selection**: `mcp_task-master-ai_list_tags` executed and user confirmed tag choice
+- [ ] **Gate 3 - Linear Project Selection**: `mcp_linear_list_projects` executed and user confirmed project choice
+- [ ] **Gate 4 - Duplicate Detection**: `mcp_linear_list_issues` executed, duplicates analyzed, cleanup strategy selected
+- [ ] **Gate 5 - Scope Planning**: `mcp_task-master-ai_get_tasks` with `withSubtasks: true` executed and scope confirmed
 - [ ] **Gate 6 - Final Approval**: User typed explicit "yes" to proceed
 
 **POST-EXECUTION VALIDATION:**
@@ -486,7 +452,7 @@ Before executing ANY `/project:` command, verify this checklist is COMPLETE:
 
 ## Taskmaster Workflow Commands
 
-Custom slash commands for the Taskmaster workflow are available in `.claude/commands/`:
+Custom slash commands for the Taskmaster workflow are available in `.claude/commands/` (create these in your project):
 
 ### /project:project-setup
 Initialize complete workflow from PRD to Linear with research-enhanced documentation.
@@ -596,7 +562,6 @@ Comprehensive validation of Taskmaster-Linear 1:1 mapping integrity.
 - **IMMEDIATE VALIDATION**: Validate sub-issue inheritance IMMEDIATELY after creation
 - **FAILURE RECOVERY**: Automatically correct inheritance failures when detected
 - **SESSION MEMORY**: Maintain context of all validations and corrections within session
-- **NEVER COPY**: NEVER copy patterns from other projects in the monorepo
 - **COMMIT PATTERN**: Commit per subtask with clear references: `[Task X.Y]`
 - **UI TESTING**: Use Playwright tests for UI components
 
@@ -604,14 +569,14 @@ Comprehensive validation of Taskmaster-Linear 1:1 mapping integrity.
 
 **PRD File Discovery Priority:**
 
-1. `{currentTag}prd.txt` (e.g., `tortastandprd.txt`)
+1. `{currentTag}prd.txt` (e.g., `myprojectprd.txt`)
 2. `prd.txt` (fallback)
 3. Interactive selection from `.taskmaster/docs/*.txt`
 4. Prompt for manual file path
 
 **Tag Selection Logic:**
 
-1. ALWAYS list available tags using `mcp__task-master-ai__list_tags`
+1. ALWAYS list available tags using `mcp_task-master-ai_list_tags`
 2. ALWAYS prompt for confirmation even if only one active tag exists
 3. Present current active tag as default with alternatives
 4. Offer new tag creation with branch-name option
@@ -619,7 +584,7 @@ Comprehensive validation of Taskmaster-Linear 1:1 mapping integrity.
 
 **Linear Project Matching:**
 
-1. ALWAYS list available projects using `mcp__linear__list_projects`
+1. ALWAYS list available projects using `mcp_linear_list_projects`
 2. Show exact name matches (case-insensitive) as recommendations
 3. Show partial name matches as alternatives
 4. REQUIRE explicit user project selection
@@ -627,7 +592,7 @@ Comprehensive validation of Taskmaster-Linear 1:1 mapping integrity.
 
 **Existing Setup Detection:**
 
-- ALWAYS analyze current state using `mcp__task-master-ai__get_tasks` with `withSubtasks: true`
+- ALWAYS analyze current state using `mcp_task-master-ai_get_tasks` with `withSubtasks: true`
 - Present 4 re-initialization strategies with clear explanations
 - Calculate exact scope impact (tasks, subtasks, Linear issues, sub-issues)
 - REQUIRE explicit user choice of re-initialization strategy
@@ -642,29 +607,29 @@ To reach 95% confidence in duplicate prevention, maintain these session context 
 - **Linear Issues Created**: Track ALL newly created issue IDs within session
 - **Sub-Issue Parent Mapping**: Maintain parent→sub-issue relationships for validation
 - **Project Assignments**: Record which project each issue/sub-issue was assigned to
-- **Validation Results**: Log all Gate 5 validation outcomes (PASS/FAIL)
+- **Validation Results**: Log all Gate 7 validation outcomes (PASS/FAIL)
 - **Inheritance Corrections**: Track any sub-issue project assignment fixes made
 
 ### Session Memory Pattern
 ```
 ## Session Context (Auto-Maintained)
 **Linear Issues Created This Session:**
-- TOR-150: Task 1 "Setup Infrastructure" → Project: Torta Stand
-  - Sub-issues: TOR-151, TOR-152, TOR-153 (all assigned to Torta Stand ✅)
-- TOR-154: Task 2 "Game Engine" → Project: Torta Stand  
-  - Sub-issues: TOR-155, TOR-156 (all assigned to Torta Stand ✅)
+- ABC-150: Task 1 "Setup Infrastructure" → Project: [Project Name]
+  - Sub-issues: ABC-151, ABC-152, ABC-153 (all assigned to [Project Name] ✅)
+- ABC-154: Task 2 "Core Implementation" → Project: [Project Name]  
+  - Sub-issues: ABC-155, ABC-156 (all assigned to [Project Name] ✅)
 
 **Validation History:**
-- Gate 5 Validation #1: PASS (all 5 sub-issues inherited project correctly)
-- Gate 5 Validation #2: FAIL → 2 corrections made → Re-validation: PASS
+- Gate 7 Validation #1: PASS (all 5 sub-issues inherited project correctly)
+- Gate 7 Validation #2: FAIL → 2 corrections made → Re-validation: PASS
 
 **Corrections Made:**
-- TOR-155: Added project assignment (Torta Stand)
-- TOR-156: Added project assignment (Torta Stand)
+- ABC-155: Added project assignment ([Project Name])
+- ABC-156: Added project assignment ([Project Name])
 ```
 
 ### Memory Usage Guidelines
 - Update session context IMMEDIATELY after any Linear operations
 - Reference session context before duplicate detection (prevent re-creating same issues)
-- Use session context for Gate 5 validation scope (know which sub-issues to check)
+- Use session context for Gate 7 validation scope (know which sub-issues to check)
 - Maintain context across tool calls within same session
