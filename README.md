@@ -1,3 +1,15 @@
+# [Torta Studios](https://www.tortastudios.com) Claude Code + Taskmaster Workflows
+## Automated Development Workflow 
+
+![Projects](https://img.shields.io/badge/Project%20Type-MVP%20%7C%20Features-purple)
+![Website](https://img.shields.io/website?url=https%3A%2F%2Fproofingroom.tortastudios.com&up_message=https%3A%2F%2Fproofingroom.tortastudios.com&up_color=%23FF3C02&down_message=https%3A%2F%2Fproofingroom.tortastudios.com&down_color=%23FF3C02&style=flat&label=Join%20Our%20Build-in-Public%20Newsletter%20%40&labelColor=%2326201D&link=https%3A%2F%2Fproofingroom.tortastudios.com)
+
+## By [@colin_thornton](https://x.com/colin_thornton), [@bitforth](https://x.com/bitforth) & [@darivadeneyra](https://x.com/darivadeneyra)
+
+[![Twitter Follow](https://img.shields.io/twitter/follow/colin_thornton)](https://x.com/colin_thornton)
+[![Twitter Follow](https://img.shields.io/twitter/follow/bitforth)](https://x.com/bitforth)
+[![Twitter Follow](https://img.shields.io/twitter/follow/darivadeneyra)](https://x.com/darivadeneyra)
+
 # Claude Code + Taskmaster Workflow Template
 
 **Transform product ideas into executed code with full project management integration**
