@@ -2,7 +2,7 @@
 ## Automated Development Workflow 
 
 ![Projects](https://img.shields.io/badge/Project%20Type-MVP%20%7C%20Features-purple)
-![Website](https://img.shields.io/website?url=https%3A%2F%2Fproofingroom.tortastudios.com&up_message=https%3A%2F%2Fproofingroom.tortastudios.com&up_color=%23FF3C02&down_message=https%3A%2F%2Fproofingroom.tortastudios.com&down_color=%23FF3C02&style=flat&label=Join%20Our%20Build-in-Public%20Newsletter%20%40&labelColor=%2326201D&link=https%3A%2F%2Fproofingroom.tortastudios.com)
+[![Join Our Build-in-Public Newsletter](https://img.shields.io/badge/Join%20Our%20Build--in--Public%20Newsletter%20@-proofingroom.tortastudios.com-FF3C02?style=flat&labelColor=26201D)](https://proofingroom.tortastudios.com)
 
 ## By [@colin_thornton](https://x.com/colin_thornton), [@bitforth](https://x.com/bitforth) & [@darivadeneyra](https://x.com/darivadeneyra)
 
