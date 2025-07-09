@@ -19,12 +19,12 @@ Get a comprehensive overview of project progress across Taskmaster and Linear.
 ## Interactive flow:
 
 ```
-Claude: Which tag to check? (current: tortastand)
+Claude: Which tag to check? (current: [project-tag])
 Or type "all" for cross-tag overview:
 
-User: tortastand
+User: [project-tag]
 
-Claude: 📊 Tortastand Project Status
+Claude: 📊 [Project Tag] Project Status
 
 Task Overview:
 ├─ Total: 12 tasks (36 subtasks)

@@ -31,13 +31,13 @@ Verifying Linear MCP connectivity...
 ✅ Linear MCP Active - 3 projects retrieved
 
 Which tag should I validate?
-Current tags: tortastand (active), admin-features, main
+Current tags: [project-tag] (active), admin-features, main
 Or enter a different tag name:
 
-User: tortastand
+User: [project-tag]
 
 Claude: Select Linear project for validation:
-- Project A: "Torta Stand" (12 issues) ⭐ [Auto-detected match]
+- Project A: "[Your Project]" (12 issues) ⭐ [Auto-detected match]
 - Project B: "Admin Dashboard" (8 issues)
 - Project C: "Core Infrastructure" (15 issues)
 
@@ -68,7 +68,7 @@ Claude: 📊 Mapping Validation Results
   - Recommendation: Clear stale metadata and re-sync
 
 **Project Inheritance Status:**
-✅ All 21 existing sub-issues correctly assigned to "Torta Stand" project
+✅ All 21 existing sub-issues correctly assigned to "[Your Project]" project
 
 **Ownership Status:**
 ✅ All 26 issues/sub-issues assigned to Project Owner
@@ -117,8 +117,8 @@ Claude: 📊 Mapping Validation Results
 ```
 ## 🔍 Taskmaster-Linear Mapping Audit
 
-**Project:** Torta Stand
-**Tag:** tortastand  
+**Project:** [Your Project]
+**Tag:** [project-tag]  
 **Validation Date:** 2024-06-24 14:30 UTC
 **Validator:** Project Owner
 
@@ -131,12 +131,12 @@ Claude: 📊 Mapping Validation Results
 ### Detailed Findings
 
 #### ✅ PASSED VALIDATIONS
-- Task 1: "Project Setup" → TOR-105 (id: abc123-def456-ghi789) ✅
-  - Metadata: linearIssueNumber=TOR-105, syncTimestamp=2024-06-24T10:30:00Z ✅
-  - Sub-issues: TOR-120, TOR-121, TOR-122 (all metadata valid, project-assigned ✅)
-- Task 2: "Game Engine" → TOR-106 (id: def456-ghi789-jkl012) ✅  
-  - Metadata: linearIssueNumber=TOR-106, syncTimestamp=2024-06-24T11:15:00Z ✅
-  - Sub-issues: TOR-123, TOR-124 (all metadata valid, project-assigned ✅)
+- Task 1: "Project Setup" → PRJ-105 (id: abc123-def456-ghi789) ✅
+  - Metadata: linearIssueNumber=PRJ-105, syncTimestamp=2024-06-24T10:30:00Z ✅
+  - Sub-issues: PRJ-120, PRJ-121, PRJ-122 (all metadata valid, project-assigned ✅)
+- Task 2: "Game Engine" → PRJ-106 (id: def456-ghi789-jkl012) ✅  
+  - Metadata: linearIssueNumber=PRJ-106, syncTimestamp=2024-06-24T11:15:00Z ✅
+  - Sub-issues: PRJ-123, PRJ-124 (all metadata valid, project-assigned ✅)
 
 #### ❌ FAILED VALIDATIONS
 - Task 3.2: "API Integration Testing" → NO LINEAR SUB-ISSUE

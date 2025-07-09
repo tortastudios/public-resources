@@ -53,7 +53,7 @@ import {
 
 ```
 Claude: 🔍 Duplicate Detection (Gate 0)
-Scanning Linear project "Torta Stand" for existing issues...
+Scanning Linear project "[Your Project]" for existing issues...
 
 ✅ No duplicates detected - proceeding with sync
 
@@ -63,7 +63,7 @@ Checking existing Linear metadata in Taskmaster tasks...
 - Valid metadata: 1/2 (50%)
 - Orphaned metadata: 1 task needs cleanup
 
-Synchronization options for tag 'tortastand':
+Synchronization options for tag '[project-tag]':
 
 1. Validate and sync all Linear metadata (recommended first step)
 2. Create missing Linear issues (ALL tasks get issues - no complexity filtering)
@@ -84,17 +84,17 @@ Claude: Performing metadata-enhanced full sync...
 ✅ Cleaned stale metadata for Task 7
 
 📋 **Phase 2: Task Sync with Metadata Storage**
-✅ Task 1: Validated existing → TOR-150 (metadata current)
-✅ Task 2: Validated existing → TOR-151 (metadata current)  
-✅ Task 3: Created new issue → TOR-152 (metadata stored)
-✅ Task 4: Created new issue → TOR-153 (metadata stored)
-✅ Task 5: Created new issue → TOR-154 (metadata stored)
+✅ Task 1: Validated existing → PRJ-150 (metadata current)
+✅ Task 2: Validated existing → PRJ-151 (metadata current)  
+✅ Task 3: Created new issue → PRJ-152 (metadata stored)
+✅ Task 4: Created new issue → PRJ-153 (metadata stored)
+✅ Task 5: Created new issue → PRJ-154 (metadata stored)
 ... (11 more tasks)
 
 📋 **Phase 3: Sub-Issue Sync with Parent Tracking**
-✅ Subtask 1.1: Created → TOR-165 (parent: TOR-150, metadata stored)
-✅ Subtask 1.2: Created → TOR-166 (parent: TOR-150, metadata stored)
-✅ Subtask 2.1: Created → TOR-167 (parent: TOR-151, metadata stored)
+✅ Subtask 1.1: Created → PRJ-165 (parent: PRJ-150, metadata stored)
+✅ Subtask 1.2: Created → PRJ-166 (parent: PRJ-150, metadata stored)
+✅ Subtask 2.1: Created → PRJ-167 (parent: PRJ-151, metadata stored)
 ... (84 more subtasks)
 
 📋 **Phase 4: Metadata Validation & Inheritance Check**
@@ -923,7 +923,7 @@ async function bulkSyncAllTasks(projectId: string, assigneeId: string) {
 
 ### **Problem Solved: Automatic Duplicate Detection**
 
-The enhanced `ensureLinearIssueExists()` function now prevents the exact scenario that occurred with TOR-107:
+The enhanced `ensureLinearIssueExists()` function now prevents the exact scenario that occurred with PRJ-107:
 
 **Before Enhancement:**
 ```typescript
@@ -942,7 +942,7 @@ const issue = await mcp__linear__create_issue({...}); // Always created new
 6. Only create new if no duplicates found ✅
 ```
 
-### **How It Prevents TOR-107 Scenario**
+### **How It Prevents PRJ-107 Scenario**
 
 **Scenario: Task 3 "Phaser-Next.js Integration Component"**
 
@@ -954,20 +954,20 @@ const existingIssues = await mcp__linear__list_issues({
   query: "Phaser-Next.js Integration Component"
 });
 
-// STEP 3: Find TOR-107 with exact title match
+// STEP 3: Find PRJ-107 with exact title match
 const exactMatch = existingIssues.find(issue => 
-  issue.title === "Phaser-Next.js Integration Component" // ✅ FOUND TOR-107
+  issue.title === "Phaser-Next.js Integration Component" // ✅ FOUND PRJ-107
 );
 
 // STEP 4: Auto-link (100% confidence match)
 console.log("✅ AUTO-LINKING: High confidence match (100%) - linking to existing issue");
 await storeLinearMetadata("3", {
-  number: "TOR-107",
+  number: "PRJ-107",
   id: "issue-uuid-placeholder-111222333",
   projectId: "project-uuid-placeholder-456789123"
 });
 
-// RESULT: Task 3 linked to TOR-107, no duplicate created ✅
+// RESULT: Task 3 linked to PRJ-107, no duplicate created ✅
 ```
 
 ### **Multi-Strategy Matching Examples**
@@ -1003,7 +1003,7 @@ const syncLog = {
   searchPerformed: true,
   existingIssuesFound: 1,
   duplicatesDetected: 1,
-  bestMatch: { issueNumber: "TOR-107", confidence: 100, type: "exact" },
+  bestMatch: { issueNumber: "PRJ-107", confidence: 100, type: "exact" },
   userChoice: "auto_linked", 
   action: "linked_existing",
   linearIssueId: "issue-uuid-placeholder-111222333",

@@ -22,7 +22,7 @@ Updates Linear issue statuses to match Taskmaster task statuses, ensuring Slack 
 ## Interactive flow
 
 ```
-Claude: 🔄 Status Sync for tag 'tortastand'
+Claude: 🔄 Status Sync for tag '[project-tag]'
 
 Analyzing status differences between Taskmaster and Linear...
 

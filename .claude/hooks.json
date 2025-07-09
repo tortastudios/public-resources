@@ -1,0 +1,35 @@
+{
+  "hooks": {
+    "PostToolUse": [
+      {
+        "matcher": "mcp__task-master-ai__set_task_status",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "~/.claude/hooks/sync-workflow.sh \"$CLAUDE_TOOL_ARGS\""
+          }
+        ]
+      },
+      {
+        "matcher": "Edit|Write|MultiEdit",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "~/.claude/hooks/batch-progress.sh \"$CLAUDE_TOOL_NAME\" \"$CLAUDE_TOOL_ARGS\""
+          }
+        ]
+      }
+    ],
+    "Stop": [
+      {
+        "matcher": "*",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "~/.claude/hooks/session-complete.sh"
+          }
+        ]
+      }
+    ]
+  }
+}

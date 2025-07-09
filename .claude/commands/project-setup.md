@@ -40,7 +40,7 @@ Initialize the complete Taskmaster workflow from PRD to Linear integration.
 ### Fresh Setup:
 ```
 Claude: 🔍 Duplicate Detection (Gate 0)
-Scanning Linear project "Torta Stand" for existing issues...
+Scanning Linear project "[Your Project]" for existing issues...
 
 ✅ No existing issues found - proceeding with fresh setup
 
@@ -48,12 +48,12 @@ Which tag should I use for these tasks?
 Current tags: main, admin-features
 Or enter a new tag name:
 
-User: tortastand
+User: [project-tag]
 
 Claude: Configuration options:
 1. Use research for task generation? (recommended)
 2. Select Linear project for issue creation:
-   - Project A: "Torta Stand Game"
+   - Project A: "[Your Project] Game"
    - Project B: "Admin Dashboard" 
 
 User: yes, Project A
@@ -87,8 +87,8 @@ Low Complexity (1-4 score): 6 tasks
 ✅ Created 15 Linear issues with 89 sub-issues
 ✅ All issues assigned to Project Owner
 ✅ Linear metadata stored in Taskmaster:
-   - Task 1 → Linear: TOR-150 (id: abc123-def456-ghi789)
-   - Task 2 → Linear: TOR-151 (id: def456-ghi789-jkl012)
+   - Task 1 → Linear: PRJ-150 (id: abc123-def456-ghi789)
+   - Task 2 → Linear: PRJ-151 (id: def456-ghi789-jkl012)
    - All subtasks include parent and Linear sub-issue IDs
 ✅ Established bidirectional sync with ID tracking
 ```
@@ -96,13 +96,13 @@ Low Complexity (1-4 score): 6 tasks
 ### Re-initialization (Duplicate Detection):
 ```
 Claude: 🔍 Duplicate Detection (Gate 0)
-Found 21 existing issues in Linear project "Torta Stand"
+Found 21 existing issues in Linear project "[Your Project]"
 
 📋 Duplicate Analysis:
 • Task 1 "Project Setup": 3 Linear issues found
-  - TOR-105 ⭐ (Quality: 95% - Context7, Recent, 8 sub-issues)
-  - TOR-90  ❌ (Quality: 70% - Older, No sub-issues)
-  - TOR-60  ❌ (Quality: 65% - Much older, Basic)
+  - PRJ-105 ⭐ (Quality: 95% - Context7, Recent, 8 sub-issues)
+  - PRJ-90  ❌ (Quality: 70% - Older, No sub-issues)
+  - PRJ-60  ❌ (Quality: 65% - Much older, Basic)
 
 • 14 more tasks with similar patterns...
 
@@ -135,8 +135,8 @@ Claude: Executing Smart Merge cleanup...
 ✅ Created 20 missing Linear sub-issues (14 new + 6 from original gap)
 ✅ All issues assigned to Project Owner
 ✅ Linear metadata updated in Taskmaster:
-   - Task 3 → Linear: TOR-152 (id: ghi789-jkl012-mno345)
-   - Subtask 3.1 → Linear: TOR-153 (id: jkl012-mno345-pqr678, parent: TOR-152)
+   - Task 3 → Linear: PRJ-152 (id: ghi789-jkl012-mno345)
+   - Subtask 3.1 → Linear: PRJ-153 (id: jkl012-mno345-pqr678, parent: PRJ-152)
    - All mappings verified and stored
 ✅ Clean 1:1 mapping achieved with full ID tracking
 ```

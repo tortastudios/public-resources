@@ -20,7 +20,7 @@ Execute selected tasks with intelligent parallelization, Context7 documentation,
 ## Interactive flow:
 
 ```
-Claude: Current tag: tortastand
+Claude: Current tag: [project-tag]
 Pending tasks:
 - Task 1: Implement Phaser Game Component (Complexity: 5)
 - Task 2: Create SSR-Safe Architecture (Complexity: 3)
@@ -37,7 +37,7 @@ User: 1-3
 Claude: Maximum complexity limit? (default: 10)
 User: 10
 
-Claude: Creating branch: tortastand-tasks-1-3
+Claude: Creating branch: [project-tag]-tasks-1-3
 Analyzing file conflicts...
 Executing in parallel: Tasks 1 & 2
 Task 3 queued (depends on Task 1)
